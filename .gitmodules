@@ -1,0 +1,3 @@
+[submodule "min-regex"]
+	path = min-regex
+	url = git@github.com:kaitou-ryaku/min-regex.git
