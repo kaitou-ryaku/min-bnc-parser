@@ -8,5 +8,5 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  lexer("a*b", "aabbc");
+  lexer("(11+20)*201-(21-1)/(0-1*a0b+b)");
 }
