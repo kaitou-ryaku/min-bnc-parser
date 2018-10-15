@@ -5,9 +5,7 @@
 
 extern void lexer(const char *regex_str, const char *match_str) {
   char simple_regex[200];
-  int current = 0;
-  simplify_regex(regex_str, 0, strlen(regex_str), simple_regex, &current, 200);
-  simple_regex[current] = '\0';
+  simplify_regex(regex_str, simple_regex, 200);
   MIN_REGEX_NODE node[100];
   regex_to_all_node(simple_regex, node, 100);
   MIN_REGEX_MATCH match[50];
