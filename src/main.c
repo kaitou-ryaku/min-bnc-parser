@@ -8,5 +8,5 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  lexer("hoge");
+  lexer("a*b", "aabbc");
 }
