@@ -8,16 +8,35 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  const char* lex_bnf = ""
-    "  number     : (0|(1|2)((0|1)|2)*)\n"
-    "  identifier : (a|b)((0|a)|b)*\n"
+  const char* bnf_str = ""
+    "  number     : (0|(1|2)(0|1|2)*)\n"
+    "  identifier : (a|b)(0|a|b)*\n"
     "  plusminus  : (+|-)\n"
     "  starslash  : (\\*|/)\n"
     "  lparen     : \\(\n"
     "  rparen     : \\)\n"
   ;
 
-  const char* src = "(11+20)*201-(21-1)/(0-1*a0b+b)";
+  const char* src_str = "(11+20)*201-(21-1)/(0-1*a0b+b)";
 
-  lexer(lex_bnf, src);
+  LEX_BNF        lex[1000];
+  char           name[1000];
+  char           bnf[1000];
+  char           simple[1000];
+  MIN_REGEX_NODE node[1000];
+
+  const int lex_max_size    = 1000;
+  const int name_max_size   = 1000;
+  const int bnf_max_size    = 1000;
+  const int simple_max_size = 1000;
+  const int node_max_size   = 1000;
+
+  const int lex_size = create_lexer(bnf_str, lex, lex_max_size, name, name_max_size, bnf, bnf_max_size, simple, simple_max_size, node, node_max_size);
+
+  LEX_TOKEN token[100];
+  const int token_max_size = 100;
+
+  const int token_size = match_lexer(token, token_max_size, lex, lex_size, src_str);
+
+  print_token(stderr, lex, lex_size, token, token_size);
 }
