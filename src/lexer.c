@@ -48,8 +48,7 @@ static void get_next_lex_right_index(const char* bnf_str, const int next_line, i
   while (bnf_str[seek] != '\n') seek++;
   (*end) = seek;
 }/*}}}*/
-
-extern int create_lexer(
+extern int create_lexer(/*{{{*/
   const char*       bnf_str
   , LEX_BNF*        lex
   , const int       lex_max_size
@@ -107,9 +106,8 @@ extern int create_lexer(
   }
 
   return line_total;
-}
-
-extern int match_lexer(
+}/*}}}*/
+extern int match_lexer(/*{{{*/
   LEX_TOKEN*       token
   , const int      token_max_size
   , const LEX_BNF* lex
@@ -144,9 +142,8 @@ extern int match_lexer(
   }
 
   return token_id;
-}
-
-extern void print_token(
+}/*}}}*/
+extern void print_token(/*{{{*/
   FILE*        fp
   , LEX_BNF*   lex
   , const int  lex_size
@@ -167,4 +164,4 @@ extern void print_token(
     fprintf(fp, " | %20s", l.simple);
     fprintf(fp, "\n");
   }
-}
+}/*}}}*/
