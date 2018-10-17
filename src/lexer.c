@@ -1,53 +1,10 @@
 #include "../include/lexer.h"
+#include "../include/text.h"
 #include "../min-regex/include/min-regex.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
-static int count_lex_line_total(const char *bnf_str);
-static void get_next_lex_left_index(const char* bnf_str, const int next_line, int* begin, int* end);
-static void get_next_lex_right_index(const char* bnf_str, const int next_line, int* begin, int* end);
-
-static int count_lex_line_total(const char *bnf_str) {/*{{{*/
-  int line = 0;
-  int seek = 0;
-  while (bnf_str[seek] != '\0') {
-    if (bnf_str[seek] == '\n') line++;
-    seek++;
-  }
-  return line;
-}/*}}}*/
-static void get_next_lex_left_index(const char* bnf_str, const int next_line, int* begin, int* end) {/*{{{*/
-  int seek = 0;
-  int line = 0;
-  while (line < next_line) {
-    if (bnf_str[seek] == '\n') line++;
-    seek++;
-  }
-
-  while (bnf_str[seek] == ' ') seek++;
-  (*begin) = seek;
-
-  while (bnf_str[seek] != ' ') seek++;
-  (*end) = seek;
-}/*}}}*/
-static void get_next_lex_right_index(const char* bnf_str, const int next_line, int* begin, int* end) {/*{{{*/
-  int seek = 0;
-  int line = 0;
-  while (line < next_line) {
-    if (bnf_str[seek] == '\n') line++;
-    seek++;
-  }
-
-  while (bnf_str[seek] != ':') seek++;
-  seek++;
-
-  while (bnf_str[seek] == ' ') seek++;
-  (*begin) = seek;
-
-  while (bnf_str[seek] != '\n') seek++;
-  (*end) = seek;
-}/*}}}*/
 extern int create_lexer(/*{{{*/
   const char*       bnf_str
   , LEX_BNF*        lex
@@ -67,7 +24,7 @@ extern int create_lexer(/*{{{*/
   int simple_seek = 0;
   int node_seek   = 0;
 
-  const int line_total = count_lex_line_total(bnf_str);
+  const int line_total = count_line_total(bnf_str);
   assert(line_total < lex_max_size);
   for (int line=0; line<line_total; line++) {
     lex[line].kind   = line;
@@ -78,7 +35,7 @@ extern int create_lexer(/*{{{*/
     lex[line].simple = &(simple[simple_seek]);
 
     int begin, end;
-    get_next_lex_left_index(bnf_str, line, &begin, &end);
+    get_next_left_index(bnf_str, line, &begin, &end);
     lex[line].name_begin = begin;
     lex[line].name_end   = end;
     assert(name_seek + end - begin + 1 < name_max_size);
@@ -89,7 +46,7 @@ extern int create_lexer(/*{{{*/
     name[name_seek + end - begin] = '\0';
     name_seek += end - begin + 1;
 
-    get_next_lex_right_index(bnf_str, line, &begin, &end);
+    get_next_right_index(bnf_str, line, &begin, &end);
     lex[line].bnf_begin = begin;
     lex[line].bnf_end   = end;
     assert(bnf_seek + end - begin + 1 < bnf_max_size);
