@@ -16,7 +16,7 @@ int main(void) {
 
   const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
 
-  LEX_BNF        lex[5000];
+  BNF            lex[5000];
   char           name[5000];
   char           bnf[5000];
   char           simple[5000];

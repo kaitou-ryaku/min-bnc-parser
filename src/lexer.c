@@ -1,3 +1,4 @@
+#include "../include/common.h"
 #include "../include/lexer.h"
 #include "../include/text.h"
 #include "../min-regex/include/min-regex.h"
@@ -7,7 +8,7 @@
 
 extern int create_lexer(/*{{{*/
   const char*       bnf_str
-  , LEX_BNF*        lex
+  , BNF*            lex
   , const int       lex_max_size
   , char*           name
   , const int       name_max_size
@@ -67,7 +68,7 @@ extern int create_lexer(/*{{{*/
 extern int match_lexer(/*{{{*/
   LEX_TOKEN*       token
   , const int      token_max_size
-  , const LEX_BNF* lex
+  , const BNF*     lex
   , const int      lex_size
   , const char*    src_str
 ) {
@@ -79,7 +80,7 @@ extern int match_lexer(/*{{{*/
     const char *rest = &(src_str[index]);
 
     for (int line=0; line<lex_size; line++) {
-      LEX_BNF l = lex[line];
+      BNF     l = lex[line];
       MIN_REGEX_MATCH match[200];
       int delta = forward_longest_match( rest, l.node, match, 200);
 
@@ -102,7 +103,7 @@ extern int match_lexer(/*{{{*/
 }/*}}}*/
 extern void print_token(/*{{{*/
   FILE*        fp
-  , LEX_BNF*   lex
+  , BNF*       lex
   , const int  lex_size
   , LEX_TOKEN* token
   , const int  token_size
@@ -110,7 +111,7 @@ extern void print_token(/*{{{*/
 
   for (int token_id=0; token_id<token_size; token_id++) {
     LEX_TOKEN t = token[token_id];
-    LEX_BNF   l = lex[t.kind];
+    BNF       l = lex[t.kind];
 
     for (int j=0; j<t.begin; j++) fprintf(fp, " ");
     for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
