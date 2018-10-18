@@ -7,7 +7,7 @@ extern void initialize_bnf(/*{{{*/
   , const int bnf_max_size
 ) {
 
-  const int except_alphabet_size = 10;
+  const int except_alphabet_size = 9;
   assert(bnf_max_size + except_alphabet_size == 255);
 
   char alphabet = -127;
@@ -20,7 +20,6 @@ extern void initialize_bnf(/*{{{*/
         || alphabet == '@'
         || alphabet == '.'
         || alphabet == '\\'
-        || alphabet == '\n'
         || alphabet == '"'
         || alphabet == '\0'
       ) alphabet++;
