@@ -12,16 +12,16 @@ typedef struct {
   int         end;
 } LEX_TOKEN;
 
-void initialize_bnf(BNF* lex, const int lex_max_size);
+void initialize_bnf(BNF* bnf, const int bnf_max_size);
 
 int create_lexer(
   const char*       bnf_str
-  , BNF*            lex
-  , const int       lex_max_size
+  , BNF*            bnf
+  , const int       bnf_max_size
   , char*           name
   , const int       name_max_size
-  , char*           bnf
-  , const int       bnf_max_size
+  , char*           lex
+  , const int       lex_max_size
   , char*           simple
   , const int       simple_max_size
   , MIN_REGEX_NODE* node
@@ -31,15 +31,14 @@ int create_lexer(
 int match_lexer(
   LEX_TOKEN*       token
   , const int      token_max_size
-  , const BNF*     lex
-  , const int      lex_size
+  , const BNF*     bnf
+  , const int      bnf_size
   , const char*    src_str
 );
 
 void print_token(
   FILE*        fp
-  , BNF*       lex
-  , const int  lex_size
+  , BNF*       bnf
   , LEX_TOKEN* token
   , const int  token_size
 );

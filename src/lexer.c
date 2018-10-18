@@ -8,14 +8,14 @@
 
 extern void initialize_bnf(/*{{{*/
   BNF* bnf
-  , const int lex_max_size
+  , const int bnf_max_size
 ) {
 
   const int except_alphabet_size = 9;
-  assert(lex_max_size + except_alphabet_size == 255);
+  assert(bnf_max_size + except_alphabet_size == 255);
 
   char alphabet = -127;
-  for (int i=0; i<lex_max_size; i++) {
+  for (int i=0; i<bnf_max_size; i++) {
     for (int j=0; j<7; j++) {
       if ( alphabet == '('
         || alphabet == '|'
@@ -28,31 +28,30 @@ extern void initialize_bnf(/*{{{*/
         || alphabet == '\0'
       ) alphabet++;
     }
-
-    bnf[i].kind       = i;
-    bnf[i].alphabet   = alphabet;
-    bnf[i].str        = NULL;
-    bnf[i].name_begin = -2;
-    bnf[i].name_end   = -2;
-    bnf[i].bnf_begin  = -2;
-    bnf[i].bnf_end    = -2;
-    bnf[i].name       = NULL;
-    bnf[i].bnf        = NULL;
-    bnf[i].simple     = NULL;
-    bnf[i].node       = NULL;
-    bnf[i].node_begin = -2;
-    bnf[i].node_end   = -2;
+    bnf[i].kind       = i;            // kind       トークン種別
+    bnf[i].alphabet   = alphabet;     // alphabet   kindをむりやりchar型にしたもの。syntaxの解析で一時的に使う
+    bnf[i].bnf_str    = NULL;         // str        bnfの文字列
+    bnf[i].name_begin = -2;           // name_begin bnf_strの左辺のトークン名の開始index
+    bnf[i].name_end   = -2;           // name_end   bnf_strの左辺のトークン名の終了index
+    bnf[i].def_begin  = -2;           // bnf_begin  bnf_strの右辺のトークン名の開始index
+    bnf[i].def_end    = -2;           // bnf_end    bnf_strの右辺のトークン名の開始index
+    bnf[i].name       = NULL;         // name       左辺のトークン名の名前
+    bnf[i].def        = NULL;         // bnf        右辺のbnfの文字列
+    bnf[i].simple     = NULL;         // simple     defをmin-regexで解析可能にした文字列
+    bnf[i].node       = NULL;         // node       simpleをmin-regexで解析したノード列
+    bnf[i].node_begin = -2;           // node_begin nodeの開始index
+    bnf[i].node_end   = -2;           // node_end   nodeの終了index
     alphabet++;
   }
 }/*}}}*/
 extern int create_lexer(/*{{{*/
-  const char*       bnf_str
-  , BNF*            lex
-  , const int       lex_max_size
+  const char*       lex_str
+  , BNF*            bnf
+  , const int       bnf_max_size
   , char*           name
   , const int       name_max_size
-  , char*           bnf
-  , const int       bnf_max_size
+  , char*           def
+  , const int       def_max_size
   , char*           simple
   , const int       simple_max_size
   , MIN_REGEX_NODE* node
@@ -60,46 +59,46 @@ extern int create_lexer(/*{{{*/
 ) {
 
   int name_seek   = 0;
-  int bnf_seek    = 0;
+  int def_seek    = 0;
   int simple_seek = 0;
   int node_seek   = 0;
 
-  const int line_total = count_line_total(bnf_str);
-  assert(line_total < lex_max_size);
+  const int line_total = count_line_total(lex_str);
+  assert(line_total < bnf_max_size);
   for (int line=0; line<line_total; line++) {
-    lex[line].kind   = line;
-    lex[line].str    = bnf_str;
-    lex[line].node   = &(node[node_seek]);
-    lex[line].name   = &(name[name_seek]);
-    lex[line].bnf    = &(bnf[bnf_seek]);
-    lex[line].simple = &(simple[simple_seek]);
+    bnf[line].kind    = line;
+    bnf[line].bnf_str = lex_str;
+    bnf[line].node    = &(node[node_seek]);
+    bnf[line].name    = &(name[name_seek]);
+    bnf[line].def     = &(def[def_seek]);
+    bnf[line].simple  = &(simple[simple_seek]);
 
     int begin, end;
-    get_next_left_index(bnf_str, line, &begin, &end);
-    lex[line].name_begin = begin;
-    lex[line].name_end   = end;
+    get_next_left_index(lex_str, line, &begin, &end);
+    bnf[line].name_begin = begin;
+    bnf[line].name_end   = end;
     assert(name_seek + end - begin + 1 < name_max_size);
 
     for (int seek=0; seek<end-begin; seek++) {
-      name[name_seek + seek] = bnf_str[begin + seek];
+      name[name_seek + seek] = lex_str[begin + seek];
     }
     name[name_seek + end - begin] = '\0';
     name_seek += end - begin + 1;
 
-    get_next_right_index(bnf_str, line, &begin, &end);
-    lex[line].bnf_begin = begin;
-    lex[line].bnf_end   = end;
-    assert(bnf_seek + end - begin + 1 < bnf_max_size);
+    get_next_right_index(lex_str, line, &begin, &end);
+    bnf[line].def_begin = begin;
+    bnf[line].def_end   = end;
+    assert(def_seek + end - begin + 1 < def_max_size);
 
     for (int seek=0; seek<end-begin; seek++) {
-      bnf[bnf_seek + seek] = bnf_str[begin + seek];
+      def[def_seek + seek] = lex_str[begin + seek];
     }
-    bnf[bnf_seek + end - begin] = '\0';
-    bnf_seek += end - begin + 1;
+    def[def_seek + end - begin] = '\0';
+    def_seek += end - begin + 1;
 
-    simple_seek += simplify_regex_arbitary(lex[line].str, lex[line].bnf_begin, lex[line].bnf_end, &(simple[simple_seek]), simple_max_size - simple_seek);
+    simple_seek += simplify_regex_arbitary(bnf[line].bnf_str, bnf[line].def_begin, bnf[line].def_end, &(simple[simple_seek]), simple_max_size - simple_seek);
 
-    node_seek += regex_to_all_node(lex[line].simple, lex[line].node, node_max_size - node_seek);
+    node_seek += regex_to_all_node(bnf[line].simple, bnf[line].node, node_max_size - node_seek);
   }
 
   return line_total;
@@ -107,8 +106,8 @@ extern int create_lexer(/*{{{*/
 extern int match_lexer(/*{{{*/
   LEX_TOKEN*       token
   , const int      token_max_size
-  , const BNF*     lex
-  , const int      lex_size
+  , const BNF*     bnf
+  , const int      bnf_size
   , const char*    src_str
 ) {
   fprintf(stderr, "LEXICAL ANALYSIS OF\n%s\n", src_str);
@@ -118,8 +117,8 @@ extern int match_lexer(/*{{{*/
   while (index < strlen(src_str)) {
     const char *rest = &(src_str[index]);
 
-    for (int line=0; line<lex_size; line++) {
-      BNF     l = lex[line];
+    for (int line=0; line<bnf_size; line++) {
+      BNF     l = bnf[line];
       MIN_REGEX_MATCH match[200];
       int delta = forward_longest_match( rest, l.node, match, 200);
 
@@ -142,22 +141,21 @@ extern int match_lexer(/*{{{*/
 }/*}}}*/
 extern void print_token(/*{{{*/
   FILE*        fp
-  , BNF*       lex
-  , const int  lex_size
+  , BNF*       bnf
   , LEX_TOKEN* token
   , const int  token_size
 ) {
 
   for (int token_id=0; token_id<token_size; token_id++) {
     LEX_TOKEN t = token[token_id];
-    BNF       l = lex[t.kind];
+    BNF       l = bnf[t.kind];
 
     for (int j=0; j<t.begin; j++) fprintf(fp, " ");
     for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
     for (int j=0; j<strlen(t.src)-t.end; j++) fprintf(fp, " ");
 
     fprintf(fp, " | %20s", l.name);
-    fprintf(fp, " | %20s", l.bnf);
+    fprintf(fp, " | %20s", l.def);
     fprintf(fp, " | %20s", l.simple);
     fprintf(fp, "\n");
   }
