@@ -33,6 +33,14 @@ int main(void) {
     , node   , sizeof(node)   / sizeof(MIN_REGEX_NODE)
   );
 
+  const char* syntax_str = ""
+    "  EXPRESSION : FORMULA ( @ | `compare` FORMULA )\n";
+    "  FORMULA    : ( @ | `plusminus` ) TERM ( `plusminus` | TERM )*\n"
+    "  TERM       : FACTOR ( @ | `starslash` FACTOR )*\n";
+    "  FACTOR     : ( IMMEDIATE | VARIABLE | `lparen` EXPRESSION `rparen` )\n";
+    "  IMMEDIATE  : `number`\n";
+    "  VARIABLE   : `identify`\n";
+
   LEX_TOKEN token[1000];
 
   const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
