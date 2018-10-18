@@ -1,3 +1,4 @@
+#include "../include/bnf.h"
 #include "../include/lexer.h"
 #include <stdio.h>
 #include <assert.h>

@@ -1,49 +1,12 @@
 #include "../include/common.h"
 #include "../include/lexer.h"
 #include "../include/text.h"
+#include "../include/bnf.h"
 #include "../min-regex/include/min-regex.h"
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 
-extern void initialize_bnf(/*{{{*/
-  BNF* bnf
-  , const int bnf_max_size
-) {
-
-  const int except_alphabet_size = 9;
-  assert(bnf_max_size + except_alphabet_size == 255);
-
-  char alphabet = -127;
-  for (int i=0; i<bnf_max_size; i++) {
-    for (int j=0; j<7; j++) {
-      if ( alphabet == '('
-        || alphabet == '|'
-        || alphabet == ')'
-        || alphabet == '*'
-        || alphabet == '@'
-        || alphabet == '.'
-        || alphabet == '\\'
-        || alphabet == '"'
-        || alphabet == '\0'
-      ) alphabet++;
-    }
-    bnf[i].kind       = i;            // kind       トークン種別
-    bnf[i].alphabet   = alphabet;     // alphabet   kindをむりやりchar型にしたもの。syntaxの解析で一時的に使う
-    bnf[i].bnf_str    = NULL;         // str        bnfの文字列
-    bnf[i].name_begin = -2;           // name_begin bnf_strの左辺のトークン名の開始index
-    bnf[i].name_end   = -2;           // name_end   bnf_strの左辺のトークン名の終了index
-    bnf[i].def_begin  = -2;           // bnf_begin  bnf_strの右辺のトークン名の開始index
-    bnf[i].def_end    = -2;           // bnf_end    bnf_strの右辺のトークン名の開始index
-    bnf[i].name       = NULL;         // name       左辺のトークン名の名前
-    bnf[i].def        = NULL;         // bnf        右辺のbnfの文字列
-    bnf[i].simple     = NULL;         // simple     defをmin-regexで解析可能にした文字列
-    bnf[i].node       = NULL;         // node       simpleをmin-regexで解析したノード列
-    bnf[i].node_begin = -2;           // node_begin nodeの開始index
-    bnf[i].node_end   = -2;           // node_end   nodeの終了index
-    alphabet++;
-  }
-}/*}}}*/
 extern int create_lexer(/*{{{*/
   const char*       lex_str
   , BNF*            bnf
@@ -58,57 +21,37 @@ extern int create_lexer(/*{{{*/
   , const int       node_max_size
 ) {
 
-  int name_seek   = 0;
-  int def_seek    = 0;
+  const int lex_size = read_bnf(lex_str, bnf, bnf_max_size, name, name_max_size, def, def_max_size);
   int simple_seek = 0;
   int node_seek   = 0;
 
-  const int line_total = count_line_total(lex_str);
-  assert(line_total < bnf_max_size);
-  for (int line=0; line<line_total; line++) {
-    bnf[line].kind    = line;
-    bnf[line].bnf_str = lex_str;
-    bnf[line].node    = &(node[node_seek]);
-    bnf[line].name    = &(name[name_seek]);
-    bnf[line].def     = &(def[def_seek]);
-    bnf[line].simple  = &(simple[simple_seek]);
+  for (int index=0; index<lex_size; index++) {
+    bnf[index].node    = &(node[node_seek]);
+    bnf[index].simple  = &(simple[simple_seek]);
 
-    int begin, end;
-    get_next_left_index(lex_str, line, &begin, &end);
-    bnf[line].name_begin = begin;
-    bnf[line].name_end   = end;
-    assert(name_seek + end - begin + 1 < name_max_size);
+    simple_seek += simplify_regex_arbitary(
+      bnf[index].bnf_str
+      , bnf[index].def_begin
+      , bnf[index].def_end
+      , &(simple[simple_seek])
+      , simple_max_size - simple_seek
+    );
 
-    for (int seek=0; seek<end-begin; seek++) {
-      name[name_seek + seek] = lex_str[begin + seek];
-    }
-    name[name_seek + end - begin] = '\0';
-    name_seek += end - begin + 1;
-
-    get_next_right_index(lex_str, line, &begin, &end);
-    bnf[line].def_begin = begin;
-    bnf[line].def_end   = end;
-    assert(def_seek + end - begin + 1 < def_max_size);
-
-    for (int seek=0; seek<end-begin; seek++) {
-      def[def_seek + seek] = lex_str[begin + seek];
-    }
-    def[def_seek + end - begin] = '\0';
-    def_seek += end - begin + 1;
-
-    simple_seek += simplify_regex_arbitary(bnf[line].bnf_str, bnf[line].def_begin, bnf[line].def_end, &(simple[simple_seek]), simple_max_size - simple_seek);
-
-    node_seek += regex_to_all_node(bnf[line].simple, bnf[line].node, node_max_size - node_seek);
+    node_seek += regex_to_all_node(
+      bnf[index].simple
+      , bnf[index].node
+      , node_max_size - node_seek
+    );
   }
 
-  return line_total;
+  return lex_size;
 }/*}}}*/
 extern int match_lexer(/*{{{*/
-  LEX_TOKEN*       token
-  , const int      token_max_size
-  , const BNF*     bnf
-  , const int      bnf_size
-  , const char*    src_str
+  LEX_TOKEN*    token
+  , const int   token_max_size
+  , const BNF*  bnf
+  , const int   bnf_size
+  , const char* src_str
 ) {
   fprintf(stderr, "LEXICAL ANALYSIS OF\n%s\n", src_str);
 
