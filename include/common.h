@@ -5,6 +5,7 @@
 
 typedef struct {
   int             kind;
+  char            alphabet;
   const char*     str;
   int             name_begin;
   int             name_end;

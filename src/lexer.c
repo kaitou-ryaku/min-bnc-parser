@@ -6,6 +6,45 @@
 #include <string.h>
 #include <assert.h>
 
+extern void initialize_bnf(/*{{{*/
+  BNF* bnf
+  , const int lex_max_size
+) {
+
+  const int except_alphabet_size = 9;
+  assert(lex_max_size + except_alphabet_size == 255);
+
+  char alphabet = -127;
+  for (int i=0; i<lex_max_size; i++) {
+    for (int j=0; j<7; j++) {
+      if ( alphabet == '('
+        || alphabet == '|'
+        || alphabet == ')'
+        || alphabet == '*'
+        || alphabet == '@'
+        || alphabet == '.'
+        || alphabet == '\\'
+        || alphabet == '"'
+        || alphabet == '\0'
+      ) alphabet++;
+    }
+
+    bnf[i].kind       = i;
+    bnf[i].alphabet   = alphabet;
+    bnf[i].str        = NULL;
+    bnf[i].name_begin = -2;
+    bnf[i].name_end   = -2;
+    bnf[i].bnf_begin  = -2;
+    bnf[i].bnf_end    = -2;
+    bnf[i].name       = NULL;
+    bnf[i].bnf        = NULL;
+    bnf[i].simple     = NULL;
+    bnf[i].node       = NULL;
+    bnf[i].node_begin = -2;
+    bnf[i].node_end   = -2;
+    alphabet++;
+  }
+}/*}}}*/
 extern int create_lexer(/*{{{*/
   const char*       bnf_str
   , BNF*            lex

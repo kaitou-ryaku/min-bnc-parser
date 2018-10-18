@@ -12,6 +12,8 @@ typedef struct {
   int         end;
 } LEX_TOKEN;
 
+void initialize_bnf(BNF* lex, const int lex_max_size);
+
 int create_lexer(
   const char*       bnf_str
   , BNF*            lex

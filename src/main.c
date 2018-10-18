@@ -16,18 +16,19 @@ int main(void) {
 
   const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
 
-  BNF            lex[5000];
+  BNF            lex[246]; // char:255 - メタ文字:9
   char           name[5000];
   char           bnf[5000];
   char           simple[5000];
   MIN_REGEX_NODE node[5000];
 
-  const int lex_max_size    = 5000;
+  const int lex_max_size    = 246;
   const int name_max_size   = 5000;
   const int bnf_max_size    = 5000;
   const int simple_max_size = 5000;
   const int node_max_size   = 5000;
 
+  initialize_bnf(lex, lex_max_size);
   const int lex_size = create_lexer(bnf_str, lex, lex_max_size, name, name_max_size, bnf, bnf_max_size, simple, simple_max_size, node, node_max_size);
 
   LEX_TOKEN token[1000];
