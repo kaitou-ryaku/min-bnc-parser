@@ -22,14 +22,16 @@ int main(void) {
   char           simple[5000];
   MIN_REGEX_NODE node[5000];
 
-  const int lex_max_size    = 246;
-  const int name_max_size   = 5000;
-  const int bnf_max_size    = 5000;
-  const int simple_max_size = 5000;
-  const int node_max_size   = 5000;
+  initialize_bnf(lex, sizeof(lex)/sizeof(BNF));
 
-  initialize_bnf(lex, lex_max_size);
-  const int lex_size = create_lexer(bnf_str, lex, lex_max_size, name, name_max_size, bnf, bnf_max_size, simple, simple_max_size, node, node_max_size);
+  const int lex_size = create_lexer(
+    bnf_str
+    , lex    , sizeof(lex)    / sizeof(BNF)
+    , name   , sizeof(name)   / sizeof(char)
+    , bnf    , sizeof(bnf)    / sizeof(char)
+    , simple , sizeof(simple) / sizeof(char)
+    , node   , sizeof(node)   / sizeof(MIN_REGEX_NODE)
+  );
 
   LEX_TOKEN token[1000];
   const int token_max_size = 1000;
