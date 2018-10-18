@@ -21,4 +21,16 @@ extern int create_parser(
   , const int       node_max_size
 );
 
+extern void syntax_to_dot(
+  FILE*        fp
+  , BNF*       bnf
+  , const int  lex_size
+  , const int  syntax_size
+  , const char* fontsize
+  , const char* width
+  , const char* topic_color
+  , const char* boundary_color
+  , const char* normal_color
+);
+
 #endif

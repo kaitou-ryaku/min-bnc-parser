@@ -50,8 +50,7 @@ extern int create_parser(/*{{{*/
           const char* name1 = bnf[index].def;
           const char* name2 = bnf[cmp_index].name;
           if (is_same_word(name1, begin, end, name2, 0, strlen(name2))) {
-            // work[work_seek] = bnf[index].alphabet;
-            work[work_seek] = 'a';
+            work[work_seek] = bnf[cmp_index].alphabet;
             break;
           }
         }
@@ -64,37 +63,92 @@ extern int create_parser(/*{{{*/
         }
       }
 
-      // for (int i=begin; i<end; i++) fprintf(stderr, "%c", (bnf[index].def)[i]);
-      // fprintf(stderr, "\n");
       seek = end;
       work_seek++;
     }
     work[work_seek] = '\0';
 
-    //fprintf(stderr, "length:%d\n", (int)strlen(work));
-    //fprintf(stderr, "work:%s\n", work);
+    simple_seek += simplify_regex_arbitary(
+      work
+      , 0
+      , strlen(work)
+      , &(simple[simple_seek])
+      , simple_max_size - simple_seek
+    );
 
-    //simple_seek += simplify_regex_arbitary(
-    //  bnf[index].bnf_str
-    //  , bnf[index].def_begin
-    //  , bnf[index].def_end
-    //  , &(simple[simple_seek])
-    //  , simple_max_size - simple_seek
-    //);
-
-    //node_seek += regex_to_all_node(
-    //  bnf[index].simple
-    //  , bnf[index].node
-    //  , node_max_size - node_seek
-    //);
-  }
-
-  for (int index=lex_size; index<bnf_size; index++) {
-    fprintf(stderr, "index: %02d | ", index);
-    fprintf(stderr, "name: %15s  | ", bnf[index].name);
-    fprintf(stderr, "def: %s ", bnf[index].def);
-    fprintf(stderr, "\n");
+    node_seek += regex_to_all_node(
+      bnf[index].simple
+      , bnf[index].node
+      , node_max_size - node_seek
+    );
   }
 
   return syntax_size;
+}/*}}}*/
+
+extern void syntax_to_dot(/*{{{*/
+  FILE*        fp
+  , BNF*       bnf
+  , const int  lex_size
+  , const int  syntax_size
+  , const char* fontsize
+  , const char* width
+  , const char* topic_color
+  , const char* boundary_color
+  , const char* normal_color
+) {
+
+  fprintf( fp, "digraph graphname {\n");
+  fprintf( fp, "  graph [rankdir = LR]\n");
+
+  for (int graph_id=lex_size; graph_id < lex_size + syntax_size; graph_id++) {
+    const MIN_REGEX_NODE *node = bnf[graph_id].node;
+
+    fprintf( fp, "\n  %05d%05d [ label=\"%s\", fontsize=%s, width=%s, shape=box, fontcolor=\"%s\", color=\"%s\"]\n", graph_id, 99999, bnf[graph_id].name, fontsize, width, boundary_color, boundary_color);
+    for (int i=node[0].total-1; i>=0;i--) {
+      MIN_REGEX_NODE n = node[i];
+      fprintf( fp, "  ");
+      fprintf( fp, "%05d%05d [ "      , graph_id, i);
+      if ((n.symbol == '(') || (n.symbol == '|') || (n.symbol == ')') || (n.symbol == '*') || (n.symbol == '@')) {
+        fprintf( fp, "label=\"\"");
+        fprintf( fp, "peripheries=1, ");
+
+      } else if ((n.symbol == '^') || (n.symbol == '$')) {
+        fprintf( fp, "label=\"%c\", " , n.symbol);
+        fprintf( fp, "peripheries=1, ");
+      } else {
+        fprintf( fp, "label=\"%s\", " , bnf[n.symbol + 127].name);
+        if (n.symbol + 127 < lex_size) fprintf( fp, "peripheries=2, ");
+        else fprintf( fp, "peripheries=1, ");
+      }
+      fprintf( fp, "fontsize=%s, ", fontsize);
+      fprintf( fp, "width=%s, "   , width);
+
+      if (n.is_magick) {
+        fprintf( fp, "shape=circle, ");
+      } else {
+        fprintf( fp, "shape=box, ");
+      }
+
+      if (i == 0 || i == 1){
+        fprintf( fp, "fontcolor=\"%s\", color=\"%s\"", boundary_color, boundary_color);
+      }  else {
+        fprintf( fp, "fontcolor=\"%s\", color=\"%s\"", normal_color, normal_color);
+      }
+
+      fprintf( fp, "]\n");
+    }
+
+    fprintf( fp, "\n");
+
+    fprintf( fp, "  %05d%05d -> %05d%05d [style=invisible]\n", graph_id, 99999, graph_id, 0);
+    for (int i=0; i<node[0].total; i++) {
+      MIN_REGEX_NODE n = node[i];
+      if (n.out_fst >= 0) fprintf( fp, "  %05d%05d -> %05d%05d\n", graph_id, i, graph_id, n.out_fst);
+      if (n.out_snd >= 0) fprintf( fp, "  %05d%05d -> %05d%05d\n", graph_id, i, graph_id, n.out_snd);
+    }
+  }
+
+  fprintf( fp, "}\n");
+
 }/*}}}*/

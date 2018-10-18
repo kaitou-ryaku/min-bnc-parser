@@ -6,7 +6,7 @@
 
 int main(void) {
 
-  BNF bnf[246]; // char:255 - メタ文字:9
+  BNF bnf[244]; // char:255 - メタ文字:11
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
 
   const char* lex_str = ""
@@ -48,7 +48,7 @@ int main(void) {
   char           syntax_simple[5000];
   MIN_REGEX_NODE syntax_node[5000];
 
-  const int parser_size = create_parser(
+  const int syntax_size = create_parser(
     syntax_str, lex_size
     , work          , sizeof(work)          / sizeof(work)
     , bnf           , sizeof(bnf)           / sizeof(BNF)
@@ -58,8 +58,18 @@ int main(void) {
     , syntax_node   , sizeof(syntax_node)   / sizeof(MIN_REGEX_NODE)
   );
 
-  const int bnf_size = lex_size + parser_size;
+  const int bnf_size = lex_size + syntax_size;
   fprintf(stderr, "total bnfsize : %d\n", bnf_size);
+
+  {
+    FILE *fp;
+    char *filename = "syntax.dot";
+    if ((fp = fopen(filename, "w")) == NULL) {
+      fprintf(stderr, "Failed to open %s.\n", filename);
+    }
+    syntax_to_dot(fp, bnf, lex_size, syntax_size, "12.0", "0.2", "#FF0000", "#FF0000", "#000000");
+    fclose(fp);
+  }
 
   LEX_TOKEN token[1000];
   const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
