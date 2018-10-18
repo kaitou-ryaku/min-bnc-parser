@@ -7,12 +7,12 @@ extern void initialize_bnf(/*{{{*/
   , const int bnf_max_size
 ) {
 
-  const int except_alphabet_size = 9;
+  const int except_alphabet_size = 10;
   assert(bnf_max_size + except_alphabet_size == 255);
 
   char alphabet = -127;
   for (int i=0; i<bnf_max_size; i++) {
-    for (int j=0; j<7; j++) {
+    for (int j=0; j<except_alphabet_size; j++) {
       if ( alphabet == '('
         || alphabet == '|'
         || alphabet == ')'
@@ -20,6 +20,7 @@ extern void initialize_bnf(/*{{{*/
         || alphabet == '@'
         || alphabet == '.'
         || alphabet == '\\'
+        || alphabet == '\n'
         || alphabet == '"'
         || alphabet == '\0'
       ) alphabet++;
@@ -56,7 +57,6 @@ extern int read_bnf(/*{{{*/
   const int line_total = count_line_total(bnf_str);
   assert(line_total < bnf_max_size);
   for (int line=0; line<line_total; line++) {
-    bnf[line].kind    = line;
     bnf[line].bnf_str = bnf_str;
     bnf[line].name    = &(name[name_seek]);
     bnf[line].def     = &(def[def_seek]);

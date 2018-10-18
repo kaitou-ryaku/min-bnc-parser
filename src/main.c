@@ -16,7 +16,7 @@ int main(void) {
     "  rparen     : \\)\n"
   ;
 
-  BNF bnf[246]; // char:255 - メタ文字:9
+  BNF bnf[245]; // char:255 - メタ文字:10
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
 
   char           name[5000];
