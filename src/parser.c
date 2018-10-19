@@ -129,19 +129,18 @@ extern void syntax_to_dot(/*{{{*/
     fprintf( fp, "\n  %05d%05d [ label=\"%s\", fontsize=%s, width=%s, shape=box, fontcolor=\"%s\", color=\"%s\"]\n", graph_id, 99999, bnf[graph_id].name, fontsize, width, boundary_color, boundary_color);
     for (int i=node[0].total-1; i>=0;i--) {
       MIN_REGEX_NODE n = node[i];
+      if ((n.in_fst < 0) && (n.in_snd < 0) && (n.out_fst < 0) && (n.out_snd < 0)) continue;
+
       fprintf( fp, "  ");
       fprintf( fp, "%05d%05d [ "      , graph_id, i);
       if ((n.symbol == '(') || (n.symbol == '|') || (n.symbol == ')') || (n.symbol == '*') || (n.symbol == '@')) {
         fprintf( fp, "label=\"\"");
-        fprintf( fp, "peripheries=1, ");
 
       } else if ((n.symbol == '^') || (n.symbol == '$')) {
         fprintf( fp, "label=\"%c\", " , n.symbol);
-        fprintf( fp, "peripheries=1, ");
       } else {
         fprintf( fp, "label=\"%s\", " , node_to_bnf(n, bnf).name);
-        if (n.symbol + 127 < lex_size) fprintf( fp, "peripheries=2, ");
-        else fprintf( fp, "peripheries=1, ");
+        if (n.symbol + 127 < lex_size) fprintf( fp, "style=filled, fillcolor=\"#C0C0C0\", ");
       }
       fprintf( fp, "fontsize=%s, ", fontsize);
       fprintf( fp, "width=%s, "   , width);
