@@ -54,6 +54,7 @@ extern int match_lexer(/*{{{*/
   , const int   bnf_size
   , const char* src_str
 ) {
+
   fprintf(stderr, "LEXICAL ANALYSIS OF\n%s\n", src_str);
 
   int token_id = 0;
@@ -79,6 +80,11 @@ extern int match_lexer(/*{{{*/
         break;
       }
     }
+  }
+
+  for (int i=0; i<token_max_size; i++) {
+    token[i].total_size = token_max_size;
+    token[i].used_size  = token_id;
   }
 
   return token_id;

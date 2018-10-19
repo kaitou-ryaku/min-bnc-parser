@@ -73,4 +73,7 @@ int main(void) {
   const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, lex_size, src_str);
   print_token(stderr, bnf, token, token_size);
+
+  PARSE_TREE pt[5000];
+  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE));
 }

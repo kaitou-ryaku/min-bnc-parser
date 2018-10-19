@@ -10,14 +10,14 @@
 
 // 関数プロトタイプ/*{{{*/
 static BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf);
-static bool parse_token_list(
+static bool parse_token_list_recursive(
   const   int        begin_token_index
   , const int        end_token_index
   , const int        current_bnf_index
   , int*             current_tree_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
-  , TREE*            tree
+  , PARSE_TREE*      pt
 );
 /*}}}*/
 
@@ -174,14 +174,47 @@ extern void syntax_to_dot(/*{{{*/
   fprintf( fp, "}\n");
 
 }/*}}}*/
-static bool parse_token_list(/*{{{*/
+static void initialize_parse_tree(/*{{{*/
+  PARSE_TREE*        pt
+  , const int        pt_max_size
+) {
+
+  for (int i=0; i<pt_max_size; pt++) {
+    pt[i].id                = i;
+    pt[i].total_size        = pt_max_size;
+    pt[i].used_size         = 0;
+    pt[i].bnf_id            = -1;
+    pt[i].bnf_node_id       = -1;
+    pt[i].token_begin_index = -1;
+    pt[i].token_end_index   = -1;
+    pt[i].up                = -1;
+    pt[i].down              = -1;
+    pt[i].left              = -1;
+    pt[i].right             = -1;
+    pt[i].down_total        = -1;
+    pt[i].is_terminal       = false;
+  }
+}/*}}}*/
+extern bool parse_token_list(/*{{{*/
+  const LEX_TOKEN*   token
+  , const BNF*       bnf
+  , PARSE_TREE*      pt
+  , const int        pt_max_size
+) {
+
+  initialize_parse_tree(pt, pt_max_size);
+  int current_tree_index = 0;
+  const bool ret = parse_token_list_recursive(0, token[0].used_size, bnf[0].lex_size, &current_tree_index, token, bnf, pt);
+  return ret;
+}/*}}}*/
+static bool parse_token_list_recursive(/*{{{*/
   const   int        begin_token_index
   , const int        end_token_index
   , const int        current_bnf_index
   , int*             current_tree_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
-  , TREE*            tree
+  , PARSE_TREE*      pt
 ) {
   return true;
 }/*}}}*/
