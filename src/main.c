@@ -34,7 +34,7 @@ int main(void) {
 
   const char* syntax_str = ""
     "  EXPRESSION : FORMULA ( @ | compare FORMULA )\n"
-    "  FORMULA    : ( @ | plusminus ) TERM ( plusminus | TERM )*\n"
+    "  FORMULA    : ( @ | plusminus ) TERM ( plusminus TERM )*\n"
     "  TERM       : FACTOR ( @ | starslash FACTOR )*\n"
     "  FACTOR     : ( IMMEDIATE | VARIABLE | lparen EXPRESSION rparen )\n"
     "  IMMEDIATE  : number\n"
