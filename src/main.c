@@ -25,8 +25,7 @@ int main(void) {
   MIN_REGEX_NODE lex_node[5000];
 
   const int lex_size = create_lexer(
-    lex_str
-    , bnf        , sizeof(bnf)        / sizeof(BNF)
+    lex_str, bnf
     , lex_name   , sizeof(lex_name)   / sizeof(char)
     , lex_def    , sizeof(lex_def)    / sizeof(char)
     , lex_simple , sizeof(lex_simple) / sizeof(char)
@@ -49,9 +48,8 @@ int main(void) {
   MIN_REGEX_NODE syntax_node[5000];
 
   const int syntax_size = create_parser(
-    syntax_str, lex_size
+    syntax_str, bnf
     , work          , sizeof(work)          / sizeof(work)
-    , bnf           , sizeof(bnf)           / sizeof(BNF)
     , syntax_name   , sizeof(syntax_name)   / sizeof(char)
     , syntax_def    , sizeof(syntax_def)    / sizeof(char)
     , syntax_simple , sizeof(syntax_simple) / sizeof(char)

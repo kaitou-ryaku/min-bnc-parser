@@ -8,18 +8,27 @@
 #include <string.h>
 #include <assert.h>
 
+// 関数プロトタイプ/*{{{*/
 static BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf);
+static bool parse_token_list(
+  const   int        begin_token_index
+  , const int        end_token_index
+  , const int        current_bnf_index
+  , int*             current_tree_index
+  , const LEX_TOKEN* token
+  , const BNF*       bnf
+  , TREE*            tree
+);
+/*}}}*/
+
 static BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
   return bnf[node.symbol + 127];
 }/*}}}*/
-
 extern int create_parser(/*{{{*/
   const char*       syntax_str
-  , const int       lex_size
+  , BNF*            bnf
   , char*           work
   , const int       work_max_size
-  , BNF*            bnf
-  , const int       bnf_max_size
   , char*           name
   , const int       name_max_size
   , char*           def
@@ -30,15 +39,24 @@ extern int create_parser(/*{{{*/
   , const int       node_max_size
 ) {
 
-  const int syntax_size = read_bnf(syntax_str, &(bnf[lex_size]), bnf_max_size, name, name_max_size, def, def_max_size);
+  const int lex_size = bnf[0].lex_size;
+  const int syntax_size = read_bnf(syntax_str, &(bnf[lex_size]), bnf[0].total_size, name, name_max_size, def, def_max_size);
   const int bnf_size    = lex_size + syntax_size;
+
+  // 配列サイズを保存
+  for (int index=0; index<bnf_size; index++) {
+    bnf[index].bnf_size    = bnf_size;
+    bnf[index].lex_size    = lex_size;
+    bnf[index].syntax_size = syntax_size;
+  }
 
   int simple_seek = 0;
   int node_seek   = 0;
 
   for (int index=lex_size; index<bnf_size; index++) {
-    bnf[index].node    = &(node[node_seek]);
-    bnf[index].simple  = &(simple[simple_seek]);
+    bnf[index].is_terminal = false;
+    bnf[index].node        = &(node[node_seek]);
+    bnf[index].simple      = &(simple[simple_seek]);
 
     int seek      = 0;
     int work_seek = 0;
@@ -90,7 +108,6 @@ extern int create_parser(/*{{{*/
 
   return syntax_size;
 }/*}}}*/
-
 extern void syntax_to_dot(/*{{{*/
   FILE*        fp
   , BNF*       bnf
@@ -156,4 +173,15 @@ extern void syntax_to_dot(/*{{{*/
 
   fprintf( fp, "}\n");
 
+}/*}}}*/
+static bool parse_token_list(/*{{{*/
+  const   int        begin_token_index
+  , const int        end_token_index
+  , const int        current_bnf_index
+  , int*             current_tree_index
+  , const LEX_TOKEN* token
+  , const BNF*       bnf
+  , TREE*            tree
+) {
+  return true;
 }/*}}}*/

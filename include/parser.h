@@ -6,11 +6,9 @@
 
 extern int create_parser(
   const char*       syntax_str
-  , const int       lex_size
+  , BNF*            bnf
   , char*           work
   , const int       work_max_size
-  , BNF*            bnf
-  , const int       bnf_max_size
   , char*           name
   , const int       name_max_size
   , char*           def

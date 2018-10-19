@@ -4,18 +4,9 @@
 #include "common.h"
 #include "../min-regex/include/min-regex.h"
 
-typedef struct {
-  int         id;
-  int         kind;
-  const char* src;
-  int         begin;
-  int         end;
-} LEX_TOKEN;
-
 int create_lexer(
   const char*       bnf_str
   , BNF*            bnf
-  , const int       bnf_max_size
   , char*           name
   , const int       name_max_size
   , char*           lex

@@ -10,7 +10,6 @@
 extern int create_lexer(/*{{{*/
   const char*       lex_str
   , BNF*            bnf
-  , const int       bnf_max_size
   , char*           name
   , const int       name_max_size
   , char*           def
@@ -21,13 +20,15 @@ extern int create_lexer(/*{{{*/
   , const int       node_max_size
 ) {
 
-  const int lex_size = read_bnf(lex_str, bnf, bnf_max_size, name, name_max_size, def, def_max_size);
+  const int lex_size = read_bnf(lex_str, bnf, bnf[0].total_size, name, name_max_size, def, def_max_size);
   int simple_seek = 0;
   int node_seek   = 0;
 
   for (int index=0; index<lex_size; index++) {
-    bnf[index].node    = &(node[node_seek]);
-    bnf[index].simple  = &(simple[simple_seek]);
+    bnf[index].is_terminal = true;
+    bnf[index].lex_size    = lex_size;
+    bnf[index].node        = &(node[node_seek]);
+    bnf[index].simple      = &(simple[simple_seek]);
 
     simple_seek += simplify_regex_arbitary(
       bnf[index].bnf_str
