@@ -8,6 +8,11 @@
 #include <string.h>
 #include <assert.h>
 
+static BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf);
+static BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
+  return bnf[node.symbol + 127];
+}/*}}}*/
+
 extern int create_parser(/*{{{*/
   const char*       syntax_str
   , const int       lex_size
@@ -117,7 +122,7 @@ extern void syntax_to_dot(/*{{{*/
         fprintf( fp, "label=\"%c\", " , n.symbol);
         fprintf( fp, "peripheries=1, ");
       } else {
-        fprintf( fp, "label=\"%s\", " , bnf[n.symbol + 127].name);
+        fprintf( fp, "label=\"%s\", " , node_to_bnf(n, bnf).name);
         if (n.symbol + 127 < lex_size) fprintf( fp, "peripheries=2, ");
         else fprintf( fp, "peripheries=1, ");
       }
