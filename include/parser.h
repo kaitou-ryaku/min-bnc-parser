@@ -22,8 +22,6 @@ extern int create_parser(
 extern void syntax_to_dot(
   FILE*        fp
   , BNF*       bnf
-  , const int  lex_size
-  , const int  syntax_size
   , const char* fontsize
   , const char* width
   , const char* topic_color

@@ -21,7 +21,6 @@ int match_lexer(
   LEX_TOKEN*       token
   , const int      token_max_size
   , const BNF*     bnf
-  , const int      bnf_size
   , const char*    src_str
 );
 

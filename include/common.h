@@ -4,24 +4,25 @@
 #include "../min-regex/include/min-regex.h"
 
 typedef struct {
-  int             kind;        // トークン種別
-  int             total_size;  // BNF配列全体のサイズ。charの1byte=8bit=256からメタ文字の数を引いたもの
-  int             bnf_size;    // BNF配列のうち埋まったサイズ。lex_size + syntax_size
+  int             kind;        // 配列の添字番号
+  int             state;       // 非使用なら0, メタ文字なら1, LEXなら2, SYNTAXなら3
+  int             total_size;  // char型の255を想定
   int             lex_size;    // BNF配列のうちLEX(終端トークン)のサイズ
   int             syntax_size; // BNF配列のうちSYNTAX(構文解析BNF)のサイズ
-  bool            is_terminal; // BNFがLEX(終端トークン)ならtrue, SYNTAX(構文解析)ならfalse
+  int             meta_size;   // BNF配列のうちメタ文字のサイズ
   char            alphabet;    // kindをむりやりchar型にしたもの。syntaxの解析で一時的に使う
+
   const char*     bnf_str;     // bnfの文字列
   int             name_begin;  // bnf_strの左辺のトークン名の開始index
   int             name_end;    // bnf_strの左辺のトークン名の終了index
   int             def_begin;   // bnf_strの右辺のトークン名の開始index
   int             def_end;     // bnf_strの右辺のトークン名の開始index
+
   const char*     name;        // 左辺のトークン名の名前
   const char*     def;         // 右辺のbnfの文字列
   const char*     simple;      // defをmin-regexで解析可能にした文字列
   MIN_REGEX_NODE* node;        // simpleをmin-regexで解析したノード列
-  int             node_begin;  // nodeの開始index
-  int             node_end;    // nodeの終了index
+  int             node_size;   // nodeの終了index+1
 } BNF;
 
 typedef struct {
