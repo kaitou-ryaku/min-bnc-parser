@@ -39,9 +39,9 @@ typedef struct {
   int  total_size;
   int  used_size;
   int  bnf_id;
-  int  bnf_node_id;
   int  token_begin_index;
   int  token_end_index;
+  int  up_bnf_node_id;
   int  up;
   int  down;
   int  left;

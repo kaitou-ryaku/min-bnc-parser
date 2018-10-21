@@ -31,7 +31,7 @@ extern void syntax_to_dot(
   , const char* normal_color
 );
 
-extern bool parse_token_list(
+int parse_token_list(
   const   LEX_TOKEN* token
   , const BNF*       bnf
   , PARSE_TREE*      pt
