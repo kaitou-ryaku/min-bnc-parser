@@ -49,7 +49,7 @@ int main(void) {
 
   const int syntax_size = create_parser(
     syntax_str, bnf
-    , work          , sizeof(work)          / sizeof(work)
+    , work          , sizeof(work)          / sizeof(char)
     , syntax_name   , sizeof(syntax_name)   / sizeof(char)
     , syntax_def    , sizeof(syntax_def)    / sizeof(char)
     , syntax_simple , sizeof(syntax_simple) / sizeof(char)

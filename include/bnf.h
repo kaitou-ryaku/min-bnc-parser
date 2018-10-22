@@ -23,5 +23,6 @@ bool is_meta(const BNF bnf);
 bool is_lex(const BNF bnf);
 bool is_syntax(const BNF bnf);
 BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf);
+int node_to_bnf_id(const MIN_REGEX_NODE node, const BNF* bnf);
 
 #endif

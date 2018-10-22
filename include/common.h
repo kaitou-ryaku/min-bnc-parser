@@ -37,18 +37,17 @@ typedef struct {
 
 typedef struct {
   int  id;
+  int  state;
   int  total_size;
   int  used_size;
   int  bnf_id;
+  int  up_bnf_node_index;
   int  token_begin_index;
   int  token_end_index;
-  int  up_bnf_node_id;
   int  up;
   int  down;
   int  left;
   int  right;
-  int  down_total;
-  bool is_terminal;
 } PARSE_TREE;
 
 #endif

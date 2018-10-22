@@ -158,3 +158,6 @@ extern bool is_lex_or_syntax(const BNF bnf) {/*{{{*/
 extern BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
   return bnf[node.symbol + 127];
 }/*}}}*/
+extern int node_to_bnf_id(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
+  return node.symbol + 127;
+}/*}}}*/
