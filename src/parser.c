@@ -75,6 +75,7 @@ extern int create_parser(/*{{{*/
   int index = -1;
   while (1) {
     index = search_bnf_next_syntax(index, bnf);
+
     if (index < 0) break;
 
     bnf[index].node   = &(node[node_seek]);
@@ -97,12 +98,8 @@ extern int create_parser(/*{{{*/
           cmp_index = search_bnf_next_lex_or_syntax(cmp_index, bnf);
           if (cmp_index < 0) break;
 
-          const BNF cmp = bnf[cmp_index];
-          if (!(is_lex(cmp)) && !(is_syntax(cmp))) continue;
-
-          const char* name1 = bnf[index].name;
-          const char* name2 = cmp.name;
-          if (is_same_word(name1, 0, strlen(name1), name2, 0, strlen(name2))) {
+          const char* name2 = bnf[cmp_index].name;
+          if (is_same_word(bnf[index].def, begin, end, name2, 0, strlen(name2))) {
             work[work_seek] = bnf[cmp_index].alphabet;
             break;
           }
