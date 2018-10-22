@@ -36,7 +36,20 @@ extern void initialize_bnf(/*{{{*/
     bnf[i].node_size   = 0;            // ノード列のサイズ
 
     for (int j=0; j<meta_size; j++) {
-      if (alphabet == meta[j]) bnf[i].state = 1;
+      if (alphabet == meta[j]) {
+        bnf[i].state     = 1;
+        if      (alphabet == '^') bnf[i].name = "^";
+        else if (alphabet == '$') bnf[i].name = "$";
+        else if (alphabet == '(') bnf[i].name = "(";
+        else if (alphabet == ')') bnf[i].name = ")";
+        else if (alphabet == '*') bnf[i].name = "*";
+        else                      bnf[i].name = "M";
+
+        bnf[i].def       = "";
+        bnf[i].simple    = "";
+        bnf[i].node      = NULL;
+        bnf[i].node_size = 0;
+      }
     }
 
     alphabet++;
