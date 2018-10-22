@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+int TEST=0;
 
 // 関数プロトタイプ/*{{{*/
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
@@ -280,8 +281,11 @@ static int parse_match_exact(/*{{{*/
   , PARSE_TREE*      pt
 ) {
 
-  print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-  fprintf(stderr, "parse_match_exact begin:\n");
+  int testtmp = TEST;
+  TEST++;
+  fprintf(stderr, "\n%d-----------------------------------------------------------------\n", testtmp);
+  fprintf(stderr, "LINE:%03d FUNC:%20s bnf_index:%02d up_bnf_node_index:%02d token_begin_index:%02d token_end_index:%02d pt_parent_index:%02d pt_empty_index:%02d", __LINE__, __func__, bnf_index, up_bnf_node_index, token_begin_index, token_end_index, pt_parent_index, pt_empty_index);
+  print_parse_tree(stderr, pt_empty_index , pt, bnf, token);
 
   int step = pt_empty_index;
 
@@ -350,8 +354,9 @@ static int parse_match_exact(/*{{{*/
     }
   }/*}}}*/
 
-  fprintf(stderr, "parse_match_exact end:\n");
+  fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
   print_parse_tree(stderr, step, pt, bnf, token);
+  fprintf(stderr, "%d-----------------------------------------------------------------\n", testtmp);
 
   return step;
 }/*}}}*/
@@ -367,6 +372,12 @@ static int parse_match_longest(/*{{{*/
   , PARSE_TREE*      pt
 ) {
 
+  int testtmp = TEST;
+  TEST++;
+  fprintf(stderr, "\n%d-----------------------------------------------------------------\n", testtmp);
+  fprintf(stderr, "LINE:%03d FUNC:%20s bnf_index:%02d up_bnf_node_index:%02d token_begin_index:%02d token_end_index:%02d pt_parent_index:%02d pt_empty_index:%02d\n", __LINE__, __func__, bnf_index, up_bnf_node_index, token_begin_index, token_end_index, pt_parent_index, pt_empty_index);
+  print_parse_tree(stderr, pt_empty_index , pt, bnf, token);
+
   int step = pt_empty_index;
   for (int tmp_end=token_end_index; tmp_end <= token_begin_index; tmp_end++) {
     const int new_step = parse_match_exact(bnf_index, up_bnf_node_index, token_begin_index, tmp_end, pt_parent_index, step, token, bnf, pt);
@@ -375,6 +386,10 @@ static int parse_match_longest(/*{{{*/
       break;
     }
   }
+
+  fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
+  print_parse_tree(stderr, step, pt, bnf, token);
+  fprintf(stderr, "%d-----------------------------------------------------------------\n", testtmp);
 
   return step;
 }/*}}}*/
@@ -387,7 +402,11 @@ static int parse_syntax_recursive(/*{{{*/
   , const BNF*       bnf
   , PARSE_TREE*      pt
 ) {
-  fprintf(stderr, "parse_syntax_recursive begin:\n");
+
+  int testtmp = TEST;
+  TEST++;
+  fprintf(stderr, "\n%d-----------------------------------------------------------------\n", testtmp);
+  fprintf(stderr, "LINE:%03d FUNC:%s token_begin_index:%02d token_end_index:%02d pt_parent_index:%02d pt_empty_index:%02d\n", __LINE__, __func__, token_begin_index, token_end_index, pt_parent_index, pt_empty_index);
   print_parse_tree(stderr, pt_empty_index , pt, bnf, token);
 
   int step = pt_empty_index;
@@ -446,8 +465,9 @@ static int parse_syntax_recursive(/*{{{*/
     }
   }
 
-  fprintf(stderr, "parse_syntax_recursive end:\n");
-  print_parse_tree(stderr, step , pt, bnf, token);
+  fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
+  print_parse_tree(stderr, step, pt, bnf, token);
+  fprintf(stderr, "%d-----------------------------------------------------------------\n", testtmp);
 
   return step;
 }/*}}}*/
