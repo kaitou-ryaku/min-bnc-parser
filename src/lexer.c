@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-extern int create_lexer(/*{{{*/
+extern int create_lex(/*{{{*/
   const char*       lex_str
   , BNF*            bnf
   , char*           name

@@ -4,7 +4,7 @@
 #include "common.h"
 #include "../min-regex/include/min-regex.h"
 
-extern int create_parser(
+extern int create_syntax(
   const char*       syntax_str
   , BNF*            bnf
   , char*           work

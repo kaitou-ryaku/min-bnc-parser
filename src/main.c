@@ -24,7 +24,7 @@ int main(void) {
   char           lex_simple[5000];
   MIN_REGEX_NODE lex_node[5000];
 
-  const int lex_size = create_lexer(
+  const int lex_size = create_lex(
     lex_str, bnf
     , lex_name   , sizeof(lex_name)   / sizeof(char)
     , lex_def    , sizeof(lex_def)    / sizeof(char)
@@ -47,7 +47,7 @@ int main(void) {
   char           syntax_simple[5000];
   MIN_REGEX_NODE syntax_node[5000];
 
-  const int syntax_size = create_parser(
+  const int syntax_size = create_syntax(
     syntax_str, bnf
     , work          , sizeof(work)          / sizeof(char)
     , syntax_name   , sizeof(syntax_name)   / sizeof(char)
@@ -74,6 +74,6 @@ int main(void) {
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
   print_token(stderr, bnf, token, token_size);
 
-  PARSE_TREE pt[5000];
-  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE));
+  // PARSE_TREE pt[5000];
+  // parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE));
 }

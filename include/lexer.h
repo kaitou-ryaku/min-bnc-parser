@@ -4,7 +4,7 @@
 #include "common.h"
 #include "../min-regex/include/min-regex.h"
 
-int create_lexer(
+int create_lex(
   const char*       bnf_str
   , BNF*            bnf
   , char*           name
