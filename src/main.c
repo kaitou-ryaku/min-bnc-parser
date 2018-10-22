@@ -70,7 +70,8 @@ int main(void) {
   }
 
   LEX_TOKEN token[1000];
-  const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
+  // const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
+  const char* src_str = "3==4";
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
   print_token(stderr, bnf, token, token_size);
 
