@@ -235,24 +235,57 @@ static void initialize_parse_tree_unit(/*{{{*/
 }/*}}}*/
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token) {/*{{{*/
   for (int i=0; i<pt_size;i++) {
-    fprintf(stderr, "id %02d ", pt[i].id);
-    fprintf(stderr, "name %20s "  , bnf[pt[i].bnf_id].name);
-    fprintf(stderr, "state %d " , pt[i].state);
-    fprintf(stderr, "bnf_id %03d ", pt[i].bnf_id);
-    fprintf(stderr, "up_bnf_node_index %02d ", pt[i].up_bnf_node_index);
-    fprintf(stderr, "up %02d ", pt[i].up         );
-    fprintf(stderr, "down %02d ", pt[i].down       );
-    fprintf(stderr, "left %02d ", pt[i].left       );
-    fprintf(stderr, "right %02d ", pt[i].right      );
-    fprintf(stderr, "token [%02d-%02d] ", pt[i].token_begin_index, pt[i].token_end_index);
+    fprintf(fp, "id %02d ", pt[i].id);
+    fprintf(fp, "name %20s "  , bnf[pt[i].bnf_id].name);
+    fprintf(fp, "state %d " , pt[i].state);
+    fprintf(fp, "bnf_id %03d ", pt[i].bnf_id);
+    fprintf(fp, "up_bnf_node_index %02d ", pt[i].up_bnf_node_index);
+    fprintf(fp, "up %02d ", pt[i].up         );
+    fprintf(fp, "down %02d ", pt[i].down       );
+    fprintf(fp, "left %02d ", pt[i].left       );
+    fprintf(fp, "right %02d ", pt[i].right      );
+    fprintf(fp, "token [%02d-%02d] ", pt[i].token_begin_index, pt[i].token_end_index);
 
     const int t_begin = token[pt[i].token_begin_index].begin;
     const int t_end   = token[pt[i].token_end_index-1].end;
     for (int j=t_begin; j<t_end; j++) {
-      fprintf(stderr, "%c", (token[0].src)[j]);
+      fprintf(fp, "%c", (token[0].src)[j]);
     }
-    fprintf(stderr, "\n");
+    fprintf(fp, "\n");
   }
+}/*}}}*/
+extern void parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize) {/*{{{*/
+
+  fprintf( fp, "digraph graphname {\n");
+  fprintf( fp, "  graph [rankdir = LR]\n");
+  fprintf(fp, "\n");
+
+  for (int i=0; i<pt_size;i++) {
+    fprintf( fp, "  %05d [ fontsize=%s, shape=box, ", pt[i].id, fontsize);
+    fprintf( fp, "label=\"%s\\n", bnf[pt[i].bnf_id].name);
+    const int t_begin = token[pt[i].token_begin_index].begin;
+    const int t_end   = token[pt[i].token_end_index-1].end;
+    for (int j=t_begin; j<t_end; j++) {
+      fprintf(fp, "%c", (token[0].src)[j]);
+    }
+    fprintf(fp, "\"]\n");
+  }
+
+  fprintf(fp, "\n");
+
+  for (int i=0; i<pt_size;i++) {
+    const int up    = pt[i].up;
+    const int down  = pt[i].down;
+    const int left  = pt[i].left;
+    const int right = pt[i].right;
+
+    if (up    >= 0) fprintf( fp, "  %05d -> %05d\n", pt[i].id, up   );
+    if (down  >= 0) fprintf( fp, "  %05d -> %05d\n", pt[i].id, down );
+    if (left  >= 0) fprintf( fp, "  %05d -> %05d\n", pt[i].id, left );
+    if (right >= 0) fprintf( fp, "  %05d -> %05d\n", pt[i].id, right);
+  }
+
+  fprintf(fp, "}\n");
 }/*}}}*/
 extern int parse_token_list(/*{{{*/
   const   LEX_TOKEN* token
@@ -276,7 +309,7 @@ extern int parse_token_list(/*{{{*/
   const int step = parse_syntax_recursive(pt[0].token_begin_index, pt[0].token_end_index, 0, 1, token, bnf, pt);
   fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
   print_parse_tree(stderr, step, pt, bnf, token);
-  return 0;
+  return step;
 }/*}}}*/
 static int parse_match_exact(/*{{{*/
   const   int        bnf_index
