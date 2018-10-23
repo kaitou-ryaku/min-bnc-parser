@@ -99,7 +99,7 @@ extern void print_token(/*{{{*/
     BNF       l = bnf[t.kind];
 
     for (int j=0; j<t.begin; j++) fprintf(fp, " ");
-    for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
+    print_token_name(fp, t);
     for (int j=0; j<strlen(t.src)-t.end; j++) fprintf(fp, " ");
 
     fprintf(fp, " | %20s", l.name);
@@ -107,4 +107,10 @@ extern void print_token(/*{{{*/
     fprintf(fp, " | %20s", l.simple);
     fprintf(fp, "\n");
   }
+}/*}}}*/
+extern void print_token_name (/*{{{*/
+  FILE*       fp
+  , LEX_TOKEN t
+) {
+  for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
 }/*}}}*/

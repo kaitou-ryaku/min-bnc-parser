@@ -246,11 +246,10 @@ static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, 
     fprintf(fp, "right %02d ", pt[i].right      );
     fprintf(fp, "token [%02d-%02d] ", pt[i].token_begin_index, pt[i].token_end_index);
 
-    const int t_begin = token[pt[i].token_begin_index].begin;
-    const int t_end   = token[pt[i].token_end_index-1].end;
-    for (int j=t_begin; j<t_end; j++) {
-      fprintf(fp, "%c", (token[0].src)[j]);
+    for (int j=pt[i].token_begin_index; j<pt[i].token_end_index; j++) {
+      print_token_name(fp, token[j]);
     }
+
     fprintf(fp, "\n");
   }
 }/*}}}*/
@@ -263,11 +262,11 @@ extern void parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE* pt,
   for (int i=0; i<pt_size;i++) {
     fprintf( fp, "  %05d [ fontsize=%s, shape=box, ", pt[i].id, fontsize);
     fprintf( fp, "label=\"%s\\n", bnf[pt[i].bnf_id].name);
-    const int t_begin = token[pt[i].token_begin_index].begin;
-    const int t_end   = token[pt[i].token_end_index-1].end;
-    for (int j=t_begin; j<t_end; j++) {
-      fprintf(fp, "%c", (token[0].src)[j]);
+
+    for (int j=pt[i].token_begin_index; j<pt[i].token_end_index; j++) {
+      print_token_name(fp, token[j]);
     }
+
     fprintf(fp, "\"]\n");
   }
 

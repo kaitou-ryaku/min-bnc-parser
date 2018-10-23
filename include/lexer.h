@@ -24,6 +24,11 @@ int match_lexer(
   , const char*    src_str
 );
 
+void print_token_name (
+  FILE*       fp
+  , LEX_TOKEN t
+);
+
 void print_token(
   FILE*        fp
   , BNF*       bnf
