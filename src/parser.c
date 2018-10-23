@@ -275,6 +275,7 @@ extern int parse_token_list(/*{{{*/
 
   const int step = parse_syntax_recursive(pt[0].token_begin_index, pt[0].token_end_index, 0, 1, token, bnf, pt);
   fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
+  print_parse_tree(stderr, step, pt, bnf, token);
   return 0;
 }/*}}}*/
 static int parse_match_exact(/*{{{*/
@@ -289,13 +290,6 @@ static int parse_match_exact(/*{{{*/
   , PARSE_TREE*      pt
 ) {
 
-  //int testtmp = TEST;
-  //TEST++;
-  //fprintf(stderr, "\n%d-----------------------------------------------------------------\n", testtmp);
-  //fprintf(stderr, "LINE:%03d FUNC:%20s bnf_index:%02d up_bnf_node_index:%02d token_begin_index:%02d token_end_index:%02d pt_parent_index:%02d pt_empty_index:%02d\n", __LINE__, __func__, bnf_index, up_bnf_node_index, token_begin_index, token_end_index, pt_parent_index, pt_empty_index);
-  //print_parse_tree(stderr, pt_empty_index , pt, bnf, token);
-
-  fprintf(stderr, "gggg\n");
   if (token_begin_index > token_end_index) return pt_empty_index;
 
   int step = pt_empty_index;
@@ -303,12 +297,10 @@ static int parse_match_exact(/*{{{*/
   int left = pt[pt_parent_index].down;
   if (left >= 0) {
     while (pt[left].right >= 0) {
-      fprintf(stderr, "iiii\n");
       left = pt[left].right;
     }
   }
 
-  fprintf(stderr, "hhhh\n");
   // 受け取ったBNFがSYNTAXの場合/*{{{*/
   if (is_syntax(bnf[bnf_index])) {
     pt[step].bnf_id            = bnf_index;
@@ -317,7 +309,9 @@ static int parse_match_exact(/*{{{*/
     pt[step].token_begin_index = token_begin_index;
     pt[step].token_end_index   = token_end_index;
     pt[step].up                = pt_parent_index;
+    pt[step].down              = -1;
     pt[step].left              = left;
+    pt[step].right             = -1;
 
     if (left < 0) pt[pt_parent_index].down = step;
     else          pt[left].right = step;
@@ -326,7 +320,7 @@ static int parse_match_exact(/*{{{*/
     const int new_step = parse_syntax_recursive(token_begin_index, token_end_index, step-1, step, token, bnf, pt);
 
     if (step == new_step) {
-      pt[step].state = 0;
+      initialize_parse_tree_unit(pt, step);
       pt[left].right = -1;
       step--;
     } else {
@@ -346,7 +340,9 @@ static int parse_match_exact(/*{{{*/
       pt[step].token_begin_index = token_begin_index;
       pt[step].token_end_index   = token_end_index;
       pt[step].up                = pt_parent_index;
+      pt[step].down              = -1;
       pt[step].left              = left;
+      pt[step].right             = -1;
 
       if (left < 0) pt[pt_parent_index].down = step;
       else          pt[left].right = step;
@@ -364,23 +360,15 @@ static int parse_match_exact(/*{{{*/
       pt[step].token_begin_index = token_begin_index;
       pt[step].token_end_index   = token_end_index;
       pt[step].up                = pt_parent_index;
+      pt[step].down              = -1;
       pt[step].left              = left;
+      pt[step].right             = -1;
 
       if (left < 0) pt[pt_parent_index].down = step;
       else          pt[left].right = step;
       step++;
     }
   }/*}}}*/
-
-  //fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
-  //print_parse_tree(stderr, step, pt, bnf, token);
-  //fprintf(stderr, "%d-----------------------------------------------------------------\n", testtmp);
-  if (step > pt_empty_index) {
-    TEST++;
-    fprintf(stderr, "%d-----------------------------------------------------------------\n", TEST);
-    fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
-    print_parse_tree(stderr, step, pt, bnf, token);
-  }
 
   return step;
 }/*}}}*/
@@ -396,26 +384,14 @@ static int parse_match_longest(/*{{{*/
   , PARSE_TREE*      pt
 ) {
 
-  //int testtmp = TEST;
-  //TEST++;
-  //fprintf(stderr, "\n%d-----------------------------------------------------------------\n", testtmp);
-  //fprintf(stderr, "LINE:%03d FUNC:%20s bnf_index:%d up_bnf_node_index:%d token_begin_index:%d token_end_index:%d pt_parent_index:%d pt_empty_index:%d\n", __LINE__, __func__, bnf_index, up_bnf_node_index, token_begin_index, token_end_index, pt_parent_index, pt_empty_index);
-  //print_parse_tree(stderr, pt_empty_index , pt, bnf, token);
-
   int step = pt_empty_index;
   for (int tmp_end=token_end_index; token_begin_index <= tmp_end; tmp_end--) {
-    fprintf(stderr, "eeee\n");
     const int new_step = parse_match_exact(bnf_index, up_bnf_node_index, token_begin_index, tmp_end, pt_parent_index, step, token, bnf, pt);
-    fprintf(stderr, "ffff\n");
     if (step < new_step) {
       step = new_step;
       break;
     }
   }
-
-  //fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
-  //print_parse_tree(stderr, step, pt, bnf, token);
-  //fprintf(stderr, "%d-----------------------------------------------------------------\n", testtmp);
 
   return step;
 }/*}}}*/
@@ -428,12 +404,6 @@ static int parse_syntax_recursive(/*{{{*/
   , const BNF*       bnf
   , PARSE_TREE*      pt
 ) {
-
-  //int testtmp = TEST;
-  //TEST++;
-  //fprintf(stderr, "\n%d-----------------------------------------------------------------\n", testtmp);
-  //fprintf(stderr, "LINE:%03d FUNC:%s token_begin_index:%d token_end_index:%d pt_parent_index:%d pt_empty_index:%d\n", __LINE__, __func__, token_begin_index, token_end_index, pt_parent_index, pt_empty_index);
-  //print_parse_tree(stderr, pt_empty_index , pt, bnf, token);
 
   int step = pt_empty_index;
   const int up = pt_parent_index;
@@ -449,31 +419,38 @@ static int parse_syntax_recursive(/*{{{*/
   while (1) {
     if (max_used_index < step) max_used_index = step;
 
-    fprintf(stderr, "cccccccc\n");
     // マッチング
     const int bnf_index = node_to_bnf_id(node[current], bnf);
     const int new_step  = parse_match_longest(bnf_index, current, begin, end, up, step, token, bnf, pt);
-    fprintf(stderr, "dddddddd\n");
 
-    // フラグ定義
+    // フラグ定義/*{{{*/
     const MIN_REGEX_NODE current_node = node[current];
     const PARSE_TREE     current_pt   = pt[step];
 
     const bool is_match = (step < new_step);
     const bool is_end   = (current_node.is_magick) && (current_node.symbol == '$');
     const bool is_all   = (current_pt.token_begin_index == token_end_index);
-    if (is_match) fprintf(stderr, "is_match TRUE\n"); else fprintf(stderr, "is_match FALSE\n");
-    if (is_end  ) fprintf(stderr, "is_end   TRUE\n"); else fprintf(stderr, "is_end   FALSE\n");
-    if (is_all  ) fprintf(stderr, "is_all   TRUE\n"); else fprintf(stderr, "is_all   FALSE\n");
-    fprintf(stderr, "current_pt.token_begin_index = %d, token_end_index = %d\n", current_pt.token_begin_index, token_end_index);
 
-    // マッチ成功 ($ノードの場合は、トークンを残してない条件も必要) -> out_fstノードへ移動
-    if (is_match && ((!is_end) || (is_end && is_all))) {
-      fprintf(stderr, "aaaa %c\n", current_node.symbol);
+    bool is_again = false;
+    int check_index = pt[pt_parent_index].down;
+    if (check_index >= 0) {
+      while (pt[check_index].right >= 0) {
+        if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
+          && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
+          && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
+        ) {
+          is_again = true;
+          break;
+        }
+        check_index = pt[check_index].right;
+      }
+    }/*}}}*/
+
+    // マッチ成功 ($ノードの場合は、トークンを残してない条件も必要) -> out_fstノードへ移動/*{{{*/
+    if (is_match && (!is_again) && ((!is_end) || (is_end && is_all))) {
 
       // $ノードでトークンを残さずマッチに成功した場合は、ループを抜ける
       if (is_end && is_all) {
-        fprintf(stderr, "fugafuga\n");
         step = new_step;
         break;
       }
@@ -483,10 +460,10 @@ static int parse_syntax_recursive(/*{{{*/
       end     = token_end_index;
       step    = new_step;
       current = node[current].out_fst;
-      fprintf(stderr, "bbbb %d %d %d %d\n", begin, end, step, current);
+    }/*}}}*/
 
-    // マッチ失敗 ($ノードで、トークンを残したままマッチした場合を含む) -> バックトラック
-    } else {
+    // マッチ失敗 ($ノードで、トークンを残したままマッチした場合を含む) -> バックトラック/*{{{*/
+    else {
       int right = pt[pt_parent_index].down;
       if (right >= 0) {
         while (pt[right].right >= 0) {
@@ -496,11 +473,9 @@ static int parse_syntax_recursive(/*{{{*/
 
       // $ノードでトークンを残したままマッチした場合 -> (最も右に生成済みの)$ノードの、一つ左のノードでバックトラック候補にする
       if (is_end) {
-        fprintf(stderr, "piyo\n");
-        if (is_match) fprintf(stderr, "is_match TRUE\n"); else fprintf(stderr, "is_match FALSE\n");
-        if (is_end  ) fprintf(stderr, "is_end   TRUE\n"); else fprintf(stderr, "is_end   FALSE\n");
-        if (is_all  ) fprintf(stderr, "is_all   TRUE\n"); else fprintf(stderr, "is_all   FALSE\n");
-        right = pt[right].left;
+        int tmp = pt[right].left;
+        initialize_parse_tree_unit(pt, right);
+        right = tmp;
         pt[right].right = -1; // 次にptの最右を走査するとき、$に繋がらないようにする
       }
 
@@ -524,23 +499,16 @@ static int parse_syntax_recursive(/*{{{*/
           pt[pt[right].left].right = -1;
         }
 
-        fprintf(stderr, "hoge %d %d %d %d\n", begin, end, step, current);
-
         // バックトラック先が^ノードになると、失敗とみなしてループを抜ける
         if (node[current].is_magick && node[current].symbol == '^') {
-          fprintf(stderr, "bar\n");
           pt[pt_parent_index].down = -1;
 
           for (int i=pt_empty_index; i<=max_used_index; i++) initialize_parse_tree_unit(pt, i);
           break;
         }
       }
-    }
+    }/*}}}*/
   }
-
-  //fprintf(stderr, "\nLINE:%03d FUNC:%20s end:\n",__LINE__,  __func__);
-  //print_parse_tree(stderr, step, pt, bnf, token);
-  //fprintf(stderr, "%d-----------------------------------------------------------------\n", testtmp);
 
   return step;
 }/*}}}*/
