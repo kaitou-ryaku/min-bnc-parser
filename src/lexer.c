@@ -87,6 +87,12 @@ extern int match_lexer(/*{{{*/
 
   return token_id;
 }/*}}}*/
+extern void print_token_name (/*{{{*/
+  FILE*       fp
+  , LEX_TOKEN t
+) {
+  for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
+}/*}}}*/
 extern void print_token(/*{{{*/
   FILE*        fp
   , BNF*       bnf
@@ -107,10 +113,4 @@ extern void print_token(/*{{{*/
     fprintf(fp, " | %20s", l.simple);
     fprintf(fp, "\n");
   }
-}/*}}}*/
-extern void print_token_name (/*{{{*/
-  FILE*       fp
-  , LEX_TOKEN t
-) {
-  for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
 }/*}}}*/

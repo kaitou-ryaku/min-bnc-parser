@@ -36,13 +36,25 @@ int parse_token_list(
   , const int        pt_max_size
 );
 
-void parse_tree_to_dot(
+void all_parse_tree_to_dot(
   FILE*               fp
   , const int         pt_size
   , const PARSE_TREE* pt
   , const BNF*        bnf
   , const LEX_TOKEN*  token
   , const char*       fontsize
+);
+
+void origin_parse_tree_to_dot(
+  FILE*               fp
+  , const int         origin
+  , const PARSE_TREE* pt
+  , const BNF*        bnf
+  , const LEX_TOKEN*  token
+  , const char*       fontsize
+  , const char*       meta_color
+  , const char*       lex_color
+  , const char*       syntax_color
 );
 
 #endif

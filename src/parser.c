@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-int TEST=0;
 
 // 関数プロトタイプ/*{{{*/
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
@@ -56,6 +55,9 @@ static int parse_syntax_recursive(
   , const BNF*       bnf
   , PARSE_TREE*      pt
 );
+static int delete_parse_tree_meta_all(const int pt_size, PARSE_TREE* pt, const BNF* bnf);
+static void delete_parse_tree_single(const int id, PARSE_TREE* pt);
+static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize, const char* meta_color, const char* lex_color, const char* syntax_color);
 /*}}}*/
 extern int create_syntax(/*{{{*/
   const char*       syntax_str
@@ -253,10 +255,10 @@ static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, 
     fprintf(fp, "\n");
   }
 }/*}}}*/
-extern void parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize) {/*{{{*/
+extern void all_parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize) {/*{{{*/
 
   fprintf( fp, "digraph graphname {\n");
-  fprintf( fp, "  graph [rankdir = LR]\n");
+  fprintf( fp, "  graph\n");
   fprintf(fp, "\n");
 
   for (int i=0; i<pt_size;i++) {
@@ -286,6 +288,36 @@ extern void parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE* pt,
 
   fprintf(fp, "}\n");
 }/*}}}*/
+extern void origin_parse_tree_to_dot(FILE *fp, const int origin, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize, const char* meta_color, const char* lex_color, const char* syntax_color) {/*{{{*/
+  fprintf( fp, "digraph graphname {\n");
+  fprintf(fp, "\n");
+  origin_parse_tree_to_dot_recursive(fp, origin, pt, bnf, token, fontsize, meta_color, lex_color, syntax_color);
+  fprintf(fp, "}\n");
+}/*}}}*/
+static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize, const char* meta_color, const char* lex_color, const char* syntax_color) {/*{{{*/
+
+  fprintf( fp, "  %05d [ fontsize=%s, shape=box, ", pt[origin].id, fontsize);
+  if      (is_meta(bnf[pt[origin].bnf_id]))   fprintf(fp, "color=\"%s\", ", meta_color);
+  else if (is_lex(bnf[pt[origin].bnf_id]))    fprintf(fp, "color=\"%s\", ", lex_color);
+  else if (is_syntax(bnf[pt[origin].bnf_id])) fprintf(fp, "color=\"%s\", ", syntax_color);
+  fprintf( fp, "label=\"%s\\n", bnf[pt[origin].bnf_id].name);
+
+  for (int j=pt[origin].token_begin_index; j<pt[origin].token_end_index; j++) {
+    print_token_name(fp, token[j]);
+  }
+
+  fprintf(fp, "\"]\n");
+
+  if (pt[origin].up >= 0) fprintf( fp, "  %05d -> %05d\n", pt[origin].up, origin);
+
+  if (pt[origin].right >= 0) {
+    origin_parse_tree_to_dot_recursive(fp, pt[origin].right, pt, bnf, token, fontsize, meta_color, lex_color, syntax_color);
+  }
+
+  if (pt[origin].down  >= 0) {
+    origin_parse_tree_to_dot_recursive(fp, pt[origin].down, pt, bnf, token, fontsize, meta_color, lex_color, syntax_color);
+  }
+}/*}}}*/
 extern int parse_token_list(/*{{{*/
   const   LEX_TOKEN* token
   , const BNF*       bnf
@@ -308,6 +340,8 @@ extern int parse_token_list(/*{{{*/
   const int step = parse_syntax_recursive(pt[0].token_begin_index, pt[0].token_end_index, 0, 1, token, bnf, pt);
   fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
   print_parse_tree(stderr, step, pt, bnf, token);
+  delete_parse_tree_meta_all(step, pt, bnf);
+
   return step;
 }/*}}}*/
 static int parse_match_exact(/*{{{*/
@@ -543,4 +577,30 @@ static int parse_syntax_recursive(/*{{{*/
   }
 
   return step;
+}/*}}}*/
+static int delete_parse_tree_meta_all(const int pt_size, PARSE_TREE* pt, const BNF* bnf) {/*{{{*/
+  int ret = 0;
+  for (int id=0; id<pt_size; id++) {
+    if (is_meta(bnf[pt[id].bnf_id])) {
+      delete_parse_tree_single(id, pt);
+      ret++;
+    }
+  }
+
+  return ret;
+}/*}}}*/
+static void delete_parse_tree_single(const int id, PARSE_TREE* pt) {/*{{{*/
+  // 自分を消して左右をつなぐ
+  if (pt[id].left  >= 0) pt[pt[id].left].right = pt[id].right;
+  if (pt[id].right >= 0) pt[pt[id].right].left = pt[id].left;
+
+  // 自分を消して上からの矢印をずらす
+  if (pt[id].up >= 0) { // 最上起点の場合を除く
+    // 上からの矢印が自分を向いている場合
+    if (pt[pt[id].up].down == id) {
+      assert(pt[id].left == -1);
+      if (pt[id].right >= 0) pt[pt[id].up].down = pt[id].right;
+      else                   pt[pt[id].up].down = -1;
+    }
+  }
 }/*}}}*/
