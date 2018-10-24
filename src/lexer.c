@@ -66,6 +66,12 @@ extern int match_lexer(/*{{{*/
       int delta = forward_longest_match( rest, l.node, match, 200);
 
       if (delta > 0) {
+        // skipノードの場合は登録しない
+        if ((strcmp(l.name, "skip") == 0) || (strcmp(l.name, "SKIP") == 0)) {
+          seek = seek + delta;
+          break;
+        }
+
         token[token_id].id    = token_id;
         token[token_id].kind  = index;
         token[token_id].src   = src_str;
