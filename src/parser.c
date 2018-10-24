@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+static int hoge=0;
 
 // 関数プロトタイプ/*{{{*/
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
@@ -255,6 +256,7 @@ static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, 
     fprintf(fp, "token [%02d-%02d] ", pt[i].token_begin_index, pt[i].token_end_index);
 
     for (int j=pt[i].token_begin_index; j<pt[i].token_end_index; j++) {
+      fprintf(fp, " ");
       print_token_name(fp, token[j]);
     }
 
@@ -453,6 +455,12 @@ static int parse_match_exact(/*{{{*/
   }/*}}}*/
 
   if (step <= pt_empty_index) memo[memo_index] = false;
+
+  if (step > pt_empty_index) {
+    hoge++;
+    fprintf(stderr, "hoge %d\n", hoge);
+    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
+  }
 
   return step;
 }/*}}}*/

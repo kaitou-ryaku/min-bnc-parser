@@ -59,14 +59,15 @@ int main(void) {
   }
 
   LEX_TOKEN token[1000];
-  const char* src_str = "int main(void) { int a; a=3; printf(\"%d\", a); return 0;}";
+  const char* src_str = "int main(void) {return 0;}";
+  // const char* src_str = "int main(void) { int a; a=3; printf(\"%d\", a); return 0;}";
   // const char* src_str = "int main(void) {printf(); return 0;}";
   // const char* src_str = "3==4";
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
   print_token(stderr, bnf, token, token_size);
 
   PARSE_TREE pt[5000];
-  static bool memo[255*1000*1000];
+  static bool memo[255*2000*2000];
   parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
 
   {
