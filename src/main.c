@@ -10,19 +10,13 @@ int main(void) {
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
 
   const char* lex_str = ""
-    "  number     : (0|(1|2|3|4|5|6|7|8|9)\\d*)\n"
-    "  identifier : (\\l|\\u|_)(\\l|\\u|_|\\d)*\n"
-    "  compare    : (==|<|>|<=|>=|!=)\n"
-    "  plusminus  : (+|-)\n"
-    "  starslash  : (\\*|/)\n"
-    "  lparen     : \\(\n"
-    "  rparen     : \\)\n"
+    #include "../c_lex.bnf"
   ;
 
-  char           lex_name[5000];
-  char           lex_def[5000];
-  char           lex_simple[5000];
-  MIN_REGEX_NODE lex_node[5000];
+  char           lex_name[2000];
+  char           lex_def[2000];
+  char           lex_simple[2000];
+  MIN_REGEX_NODE lex_node[2000];
 
   const int lex_size = create_lex(
     lex_str, bnf
@@ -33,19 +27,14 @@ int main(void) {
   );
 
   const char* syntax_str = ""
-    "  EXPRESSION : FORMULA ( @ | compare FORMULA )\n"
-    "  FORMULA    : ( @ | plusminus ) TERM ( plusminus TERM )*\n"
-    "  TERM       : FACTOR ( @ | starslash FACTOR )*\n"
-    "  FACTOR     : ( IMMEDIATE | VARIABLE | lparen EXPRESSION rparen )\n"
-    "  IMMEDIATE  : number\n"
-    "  VARIABLE   : identifier\n"
+    #include "../c_syntax.bnf"
   ;
 
-  char           work[1000];
-  char           syntax_name[5000];
-  char           syntax_def[5000];
-  char           syntax_simple[5000];
-  MIN_REGEX_NODE syntax_node[5000];
+  char           work[2000];
+  char           syntax_name[4000];
+  char           syntax_def[20000];
+  char           syntax_simple[20000];
+  MIN_REGEX_NODE syntax_node[2000];
 
   const int syntax_size = create_syntax(
     syntax_str, bnf
@@ -69,25 +58,27 @@ int main(void) {
     fclose(fp);
   }
 
-  LEX_TOKEN token[1000];
-  const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)*(15+20)*203-(42-0)/(0-7*A0b+b)";
-  // const char* src_str = "3==4";
-  const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
-  print_token(stderr, bnf, token, token_size);
+//  LEX_TOKEN token[1000];
+//  const char* src_str = "int main(void) {printf(); return 0;}";
+//  // const char* src_str = "3==4";
+//  const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
+//  print_token(stderr, bnf, token, token_size);
+//
+//  PARSE_TREE pt[5000];
+//  static bool memo[255*1000*1000];
+//  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
+//
+//  {
+//    FILE *fp;
+//    char *filename = "parse_tree.dot";
+//    if ((fp = fopen(filename, "w")) == NULL) {
+//      fprintf(stderr, "Failed to open %s.\n", filename);
+//    }
+//
+//    origin_parse_tree_to_dot(fp, 0, pt, bnf, token, "12.0", NULL, "#FF0000", "#000000");
+//
+//    fclose(fp);
+//  }
 
-  PARSE_TREE pt[5000];
-  static bool memo[255*1000*1000];
-  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
-
-  {
-    FILE *fp;
-    char *filename = "parse_tree.dot";
-    if ((fp = fopen(filename, "w")) == NULL) {
-      fprintf(stderr, "Failed to open %s.\n", filename);
-    }
-
-    origin_parse_tree_to_dot(fp, 0, pt, bnf, token, "12.0", NULL, "#FF0000", "#000000");
-
-    fclose(fp);
-  }
+  return 0;
 }
