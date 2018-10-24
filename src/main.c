@@ -70,13 +70,14 @@ int main(void) {
   }
 
   LEX_TOKEN token[1000];
-  const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)";
+  const char* src_str = "2==(15+20)*203-(42-0)/(0-7*A0b+b)*(15+20)*203-(42-0)/(0-7*A0b+b)";
   // const char* src_str = "3==4";
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
   print_token(stderr, bnf, token, token_size);
 
   PARSE_TREE pt[5000];
-  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE));
+  static bool memo[255*1000*1000];
+  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
 
   {
     FILE *fp;

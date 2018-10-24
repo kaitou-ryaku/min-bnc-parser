@@ -34,6 +34,8 @@ int parse_token_list(
   , const BNF*       bnf
   , PARSE_TREE*      pt
   , const int        pt_max_size
+  , bool*            memo
+  , const int        memo_size
 );
 
 void all_parse_tree_to_dot(
