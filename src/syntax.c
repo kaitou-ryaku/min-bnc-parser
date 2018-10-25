@@ -2,6 +2,7 @@
 #include "../include/lexer.h"
 #include "../include/text.h"
 #include "../include/bnf.h"
+#include "../include/syntax.h"
 #include "../min-regex/include/min-regex.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -11,14 +12,6 @@ static int hoge=0;
 
 // 関数プロトタイプ/*{{{*/
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
-extern int parse_token_list(
-  const   LEX_TOKEN* token
-  , const BNF*       bnf
-  , PARSE_TREE*      pt
-  , const int        pt_max_size
-  , bool*            memo
-  , const int        memo_size
-);
 static void initialize_parse_tree(
   PARSE_TREE*        pt
   , const int        pt_max_size

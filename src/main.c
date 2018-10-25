@@ -1,6 +1,6 @@
 #include "../include/bnf.h"
 #include "../include/lexer.h"
-#include "../include/parser.h"
+#include "../include/syntax.h"
 #include <stdio.h>
 #include <assert.h>
 
