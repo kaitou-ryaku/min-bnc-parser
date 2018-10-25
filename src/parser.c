@@ -9,6 +9,7 @@
 
 static int hoge=0;
 // 関数プロトタイプ/*{{{*/
+static void print_from_token_to_token(FILE *fp, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token);
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
 static void initialize_parse_tree(
   PARSE_TREE*        pt
@@ -82,6 +83,25 @@ static void initialize_parse_tree_unit(/*{{{*/
   pt[index].left              = -1;
   pt[index].right             = -1;
 }/*}}}*/
+static void print_from_token_to_token(FILE *fp, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token) {/*{{{*/
+  if (token == NULL) return;
+
+  int begin;
+  if      (token_begin_index < 0)                   begin = 0;
+  else if (token_begin_index >= token[0].used_size) begin = -1;
+  else                                              begin = token[token_begin_index].begin;
+
+  int end;
+  if      (token_end_index <= 0)                  end = -1;
+  else if (token_end_index >  token[0].used_size) end = token[token[0].used_size-1].end;
+  else                                            end = token[token_end_index-1].end;
+
+  if ((begin >= 0) && (end >= 0)) {
+    for (int j=begin; j<end; j++) {
+      fprintf(fp, "%c", (token[0].src)[j]);
+    }
+  }
+}/*}}}*/
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token) {/*{{{*/
   for (int i=0; i<pt_size;i++) {
     fprintf(fp, "id %02d ", pt[i].id);
@@ -94,12 +114,7 @@ static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, 
     fprintf(fp, "left %02d ", pt[i].left       );
     fprintf(fp, "right %02d ", pt[i].right      );
     fprintf(fp, "token [%02d-%02d] ", pt[i].token_begin_index, pt[i].token_end_index);
-
-    for (int j=pt[i].token_begin_index; j<pt[i].token_end_index; j++) {
-      fprintf(fp, " ");
-      // print_token_name(fp, token[j]);
-    }
-
+    print_from_token_to_token(fp, pt[i].token_begin_index, pt[i].token_end_index, token);
     fprintf(fp, "\n");
   }
 }/*}}}*/
@@ -112,11 +127,7 @@ extern void all_parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE*
   for (int i=0; i<pt_size;i++) {
     fprintf( fp, "  %05d [ fontsize=%s, shape=box, ", pt[i].id, fontsize);
     fprintf( fp, "label=\"%s\\n", bnf[pt[i].bnf_id].name);
-
-    for (int j=pt[i].token_begin_index; j<pt[i].token_end_index; j++) {
-      // print_token_name(fp, token[j]);
-    }
-
+    print_from_token_to_token(fp, pt[i].token_begin_index, pt[i].token_end_index, token);
     fprintf(fp, "\"]\n");
   }
 
@@ -150,9 +161,7 @@ static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const
   else if (is_syntax(bnf[pt[origin].bnf_id])) fprintf(fp, "color=\"%s\", ", syntax_color);
   fprintf( fp, "label=\"%s\\n", bnf[pt[origin].bnf_id].name);
 
-  for (int j=pt[origin].token_begin_index; j<pt[origin].token_end_index; j++) {
-    // print_token_name(fp, token[j]);
-  }
+  print_from_token_to_token(fp, pt[origin].token_begin_index, pt[origin].token_end_index, token);
 
   fprintf(fp, "\"]\n");
 
@@ -296,11 +305,11 @@ static int parse_match_exact(/*{{{*/
 
   if (step <= pt_empty_index) memo[memo_index] = false;
 
-  if (step > pt_empty_index) {
-    hoge++;
-    fprintf(stderr, "hoge %d\n", hoge);
-    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-  }
+//  if (step > pt_empty_index) {
+//    hoge++;
+//    fprintf(stderr, "hoge %d\n", hoge);
+//    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
+//  }
 
   return step;
 }/*}}}*/
@@ -365,28 +374,18 @@ static int parse_syntax_recursive(/*{{{*/
     const bool is_end   = (current_node.is_magick) && (current_node.symbol == '$');
     const bool is_all   = (current_pt.token_begin_index == token_end_index);
 
-    //bool is_again = false;
-    //int check_index = pt[pt_parent_index].down;
-    //if (check_index >= 0) {
-    //  while (pt[check_index].right >= 0) {
-    //    if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
-    //      && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
-    //      && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
-    //    ) {
-    //      is_again = true;
-    //      break;
-    //    }
-    //    check_index = pt[check_index].right;
-    //  }
-    //
     bool is_again = false;
-    for (int check_index = 0; check_index < pt_empty_index; check_index++) {
-      if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
-        && (current_pt.token_end_index   == pt[check_index].token_end_index)
-        && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
-      ) {
-        is_again = true;
-        break;
+    int check_index = pt[pt_parent_index].down;
+    if (check_index >= 0) {
+      while (pt[check_index].right >= 0) {
+        if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
+          && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
+          && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
+        ) {
+          is_again = true;
+          break;
+        }
+        check_index = pt[check_index].right;
       }
     }/*}}}*/
 
