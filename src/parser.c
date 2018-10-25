@@ -19,6 +19,7 @@ static void initialize_parse_tree_unit(
   PARSE_TREE*        pt
   , const int        index
 );
+static bool is_same_pt_exist(const int target_pt_id, const int origin_pt_id, const PARSE_TREE* pt);
 static int parse_match_exact(
   const   int        bnf_index
   , const int        up_bnf_node_index
@@ -236,6 +237,7 @@ static int parse_match_exact(/*{{{*/
 
   // 受け取ったBNFがSYNTAXの場合/*{{{*/
   if (is_syntax(bnf[bnf_index])) {
+
     pt[step].bnf_id            = bnf_index;
     pt[step].up_bnf_node_index = up_bnf_node_index;
     pt[step].state             = 3;
@@ -305,14 +307,41 @@ static int parse_match_exact(/*{{{*/
 
   if (step <= pt_empty_index) memo[memo_index] = false;
 
-//  if (step > pt_empty_index) {
-//    hoge++;
-//    fprintf(stderr, "hoge %d\n", hoge);
-//    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-//  }
+  //if (step > pt_empty_index) {
+  //  hoge++;
+  //  if (hoge%1 == 0) {
+  //    fprintf(stderr, "hoge %d\n", hoge);
+  //    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
+  //  }
+  //}
 
   return step;
 }/*}}}*/
+static bool is_same_pt_exist(const int target_pt_index, const int origin_pt_index, const PARSE_TREE* pt) {
+  bool ret = false;
+  const PARSE_TREE target = pt[target_pt_index];
+  const PARSE_TREE origin = pt[origin_pt_index];
+
+  if (target_pt_index != origin_pt_index) {
+    if ( (target.bnf_id            == origin.bnf_id)
+      && (target.token_begin_index == origin.token_begin_index)
+      && (target.token_end_index   == origin.token_end_index)
+    ) {
+      fprintf(stderr, "same\n");
+      ret = true;
+    }
+  }
+
+  if ((!ret) && (origin.left >= 0)) {
+    if (is_same_pt_exist(target_pt_index, origin.left, pt)) ret = true;
+
+  } else if ((!ret) && (origin.left < 0) && (origin.up >= 0)) {
+    if (is_same_pt_exist(target_pt_index, origin.up, pt)) ret = true;
+
+  }
+
+  return ret;
+}
 static int parse_match_longest(/*{{{*/
   const   int        bnf_index
   , const int        up_bnf_node_index
@@ -352,6 +381,9 @@ static int parse_syntax_recursive(/*{{{*/
   const int up = pt_parent_index;
   assert(is_syntax(bnf[pt[up].bnf_id]));
 
+  // 親に繋がった全解析木の中で、同一syntax同一トークン列を再訪問してたら、解析せず、メモも更新しない
+  if (is_same_pt_exist(up, up, pt)) return pt_empty_index;
+
   const MIN_REGEX_NODE* node = bnf[pt[up].bnf_id].node;
 
   int begin   = token_begin_index;
@@ -374,18 +406,23 @@ static int parse_syntax_recursive(/*{{{*/
     const bool is_end   = (current_node.is_magick) && (current_node.symbol == '$');
     const bool is_all   = (current_pt.token_begin_index == token_end_index);
 
+    // 今回のnode達の中で、訪問済みの同一ノード同一トークン列を再訪問したかどうか
     bool is_again = false;
     int check_index = pt[pt_parent_index].down;
     if (check_index >= 0) {
-      while (pt[check_index].right >= 0) {
-        if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
-          && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
-          && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
-        ) {
-          is_again = true;
-          break;
+      while (pt[check_index].up >= 0) {
+        while (pt[check_index].right >= 0) {
+          if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
+            && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
+            && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
+          ) {
+            is_again = true;
+            break;
+          }
+          if (is_again) break;
+          check_index = pt[check_index].right;
         }
-        check_index = pt[check_index].right;
+        check_index = pt[check_index].up;
       }
     }/*}}}*/
 

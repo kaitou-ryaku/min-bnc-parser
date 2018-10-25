@@ -2,6 +2,7 @@
 #include "../include/text.h"
 #include "../min-regex/include/min-regex.h"
 #include <assert.h>
+#include <stdio.h>
 
 static int search_bnf_unused(const BNF* bnf);
 static int search_bnf_next_state(const int bnf_state, const int current_bnf_index, const BNF* bnf);
@@ -173,4 +174,14 @@ extern BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
 }/*}}}*/
 extern int node_to_bnf_id(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
   return node.symbol + 127;
+}/*}}}*/
+extern void print_bnf_unit(FILE* fp, const BNF bnf) {/*{{{*/
+  fprintf(fp, "%03d/%d ", bnf.kind, bnf.total_size);
+  if (bnf.state == 0) fprintf(fp, "EMPTY  ");
+  if (bnf.state == 1) fprintf(fp, "META %c ", bnf.alphabet);
+  if (bnf.state == 2) fprintf(fp, "LEX    ");
+  if (bnf.state == 3) fprintf(fp, "SYNTAX ");
+
+  fprintf(fp, "%20s: ", bnf.name);
+  fprintf(fp, "%s\n", bnf.def);
 }/*}}}*/
