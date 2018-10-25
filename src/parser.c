@@ -365,18 +365,28 @@ static int parse_syntax_recursive(/*{{{*/
     const bool is_end   = (current_node.is_magick) && (current_node.symbol == '$');
     const bool is_all   = (current_pt.token_begin_index == token_end_index);
 
+    //bool is_again = false;
+    //int check_index = pt[pt_parent_index].down;
+    //if (check_index >= 0) {
+    //  while (pt[check_index].right >= 0) {
+    //    if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
+    //      && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
+    //      && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
+    //    ) {
+    //      is_again = true;
+    //      break;
+    //    }
+    //    check_index = pt[check_index].right;
+    //  }
+    //
     bool is_again = false;
-    int check_index = pt[pt_parent_index].down;
-    if (check_index >= 0) {
-      while (pt[check_index].right >= 0) {
-        if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
-          && (current_pt.token_end_index   == pt[check_index].token_end_index) // これは不必要
-          && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
-        ) {
-          is_again = true;
-          break;
-        }
-        check_index = pt[check_index].right;
+    for (int check_index = 0; check_index < pt_empty_index; check_index++) {
+      if ( (current_pt.token_begin_index == pt[check_index].token_begin_index)
+        && (current_pt.token_end_index   == pt[check_index].token_end_index)
+        && (current_pt.up_bnf_node_index == pt[check_index].up_bnf_node_index)
+      ) {
+        is_again = true;
+        break;
       }
     }/*}}}*/
 
