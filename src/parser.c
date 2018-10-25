@@ -317,21 +317,22 @@ static int parse_match_exact(/*{{{*/
 
   return step;
 }/*}}}*/
-static bool is_same_pt_exist(const int target_pt_index, const int origin_pt_index, const PARSE_TREE* pt) {
+static bool is_same_pt_exist(const int target_pt_index, const int origin_pt_index, const PARSE_TREE* pt) {/*{{{*/
   bool ret = false;
   const PARSE_TREE target = pt[target_pt_index];
   const PARSE_TREE origin = pt[origin_pt_index];
 
+  // 呼び出し元がis_same_pt_exist(up, up)の場合は自己照合になるのでif文で弾いた
   if (target_pt_index != origin_pt_index) {
     if ( (target.bnf_id            == origin.bnf_id)
       && (target.token_begin_index == origin.token_begin_index)
       && (target.token_end_index   == origin.token_end_index)
     ) {
-      fprintf(stderr, "same\n");
       ret = true;
     }
   }
 
+  // 呼び出し元がis_same_pt_exist(up, up)の場合にも実行される
   if ((!ret) && (origin.left >= 0)) {
     if (is_same_pt_exist(target_pt_index, origin.left, pt)) ret = true;
 
@@ -341,7 +342,7 @@ static bool is_same_pt_exist(const int target_pt_index, const int origin_pt_inde
   }
 
   return ret;
-}
+}/*}}}*/
 static int parse_match_longest(/*{{{*/
   const   int        bnf_index
   , const int        up_bnf_node_index

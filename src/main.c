@@ -7,25 +7,35 @@
 
 int main(void) {
 
-  // const char* lex_str = ""
-  //   #include "../bnf/c_lex.bnf"
-  // ;
-  // const char* syntax_str = ""
-  //   #include "../bnf/c_syntax.bnf"
-  // ;
-  // const char* src_str = ""
-  //   #include "../bnf/c_source.txt"
-  // ;
+  //const char* lex_str = ""
+  //  #include "../bnf/c_lex.bnf"
+  //;
+  //const char* syntax_str = ""
+  //  #include "../bnf/c_syntax.bnf"
+  //;
+  //const char* src_str = ""
+  //  #include "../bnf/c_source.txt"
+  //;
 
   const char* lex_str = ""
-    #include "../bnf/math_lex.bnf"
+    #include "../bnf/minc_lex.bnf"
   ;
   const char* syntax_str = ""
-    #include "../bnf/math_syntax.bnf"
+    #include "../bnf/minc_syntax.bnf"
   ;
   const char* src_str = ""
-    #include "../bnf/math_source.txt"
+    #include "../bnf/minc_source.txt"
   ;
+
+  // const char* lex_str = ""
+  //   #include "../bnf/math_lex.bnf"
+  // ;
+  // const char* syntax_str = ""
+  //   #include "../bnf/math_syntax.bnf"
+  // ;
+  // const char* src_str = ""
+  //   #include "../bnf/math_source.txt"
+  // ;
 
   BNF bnf[255]; // char:255文字のアルファベットに対応
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
