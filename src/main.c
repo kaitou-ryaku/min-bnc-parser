@@ -7,13 +7,28 @@
 
 int main(void) {
 
+  const char* lex_str = ""
+    #include "../bnf/c_lex.bnf"
+  ;
+  const char* syntax_str = ""
+    #include "../bnf/c_syntax.bnf"
+  ;
+  const char* src_str = ""
+    #include "../bnf/c_source.txt"
+  ;
+
+  // const char* lex_str = ""
+  //   #include "../bnf/math_lex.bnf"
+  // ;
+  // const char* syntax_str = ""
+  //   #include "../bnf/math_syntax.bnf"
+  // ;
+  // const char* src_str = ""
+  //   #include "../bnf/math_source.txt"
+  // ;
+
   BNF bnf[255]; // char:255文字のアルファベットに対応
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
-
-  const char* lex_str = ""
-    // #include "../bnf/c_lex.bnf"
-    #include "../bnf/math_lex.bnf"
-  ;
 
   char           lex_name[2000];
   char           lex_def[2000];
@@ -27,11 +42,6 @@ int main(void) {
     , lex_simple , sizeof(lex_simple) / sizeof(char)
     , lex_node   , sizeof(lex_node)   / sizeof(MIN_REGEX_NODE)
   );
-
-  const char* syntax_str = ""
-    // #include "../bnf/c_syntax.bnf"
-    #include "../bnf/math_syntax.bnf"
-  ;
 
   char           work[2000];
   char           syntax_name[4000];
@@ -62,10 +72,6 @@ int main(void) {
   }
 
   LEX_TOKEN token[1000];
-  const char* src_str = ""
-    // #include "../bnf/c_source.txt"
-    #include "../bnf/math_source.txt"
-  ;
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
   print_token(stderr, bnf, token, token_size);
 
