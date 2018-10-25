@@ -11,7 +11,8 @@ int main(void) {
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
 
   const char* lex_str = ""
-    #include "../c_lex.bnf"
+    // #include "../bnf/c_lex.bnf"
+    #include "../bnf/math_lex.bnf"
   ;
 
   char           lex_name[2000];
@@ -28,7 +29,8 @@ int main(void) {
   );
 
   const char* syntax_str = ""
-    #include "../c_syntax.bnf"
+    // #include "../bnf/c_syntax.bnf"
+    #include "../bnf/math_syntax.bnf"
   ;
 
   char           work[2000];
@@ -60,10 +62,10 @@ int main(void) {
   }
 
   LEX_TOKEN token[1000];
-  const char* src_str = "int main(void) {return 0;}";
-  // const char* src_str = "int main(void) { int a; a=3; printf(\"%d\", a); return 0;}";
-  // const char* src_str = "int main(void) {printf(); return 0;}";
-  // const char* src_str = "3==4";
+  const char* src_str = ""
+    // #include "../bnf/c_source.txt"
+    #include "../bnf/math_source.txt"
+  ;
   const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
   print_token(stderr, bnf, token, token_size);
 
