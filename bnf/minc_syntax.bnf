@@ -1,4 +1,4 @@
-"PROGRAM            : ( V_DEC semicolon | F_DEC | PROTOTYPE semicolon ) *"                                                              "\n"
+"PROGRAM            : ( V_DEC semicolon | F_DEC | PROTOTYPE semicolon ) ( V_DEC semicolon | F_DEC | PROTOTYPE semicolon ) *"            "\n"
 "F_DEC              : TYPE VARIABLE lparen ( @ | V_DEC ( comma V_DEC ) * ) rparen FUNCTION"                                             "\n"
 "PROTOTYPE          : TYPE VARIABLE lparen ( @ | V_DEC ( comma V_DEC ) * ) rparen"                                                      "\n"
 "V_DEC              : TYPE VARIABLE"                                                                                                    "\n"
