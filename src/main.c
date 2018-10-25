@@ -17,14 +17,24 @@ int main(void) {
   //  #include "../bnf/c_source.txt"
   //;
 
+  //const char* lex_str = ""
+  //  #include "../bnf/minc_lex.bnf"
+  //;
+  //const char* syntax_str = ""
+  //  #include "../bnf/minc_syntax.bnf"
+  //;
+  //const char* src_str = ""
+  //  #include "../bnf/minc_source.txt"
+  //;
+
   const char* lex_str = ""
-    #include "../bnf/minc_lex.bnf"
+    #include "../bnf/tmp_lex.bnf"
   ;
   const char* syntax_str = ""
-    #include "../bnf/minc_syntax.bnf"
+    #include "../bnf/tmp_syntax.bnf"
   ;
   const char* src_str = ""
-    #include "../bnf/minc_source.txt"
+    #include "../bnf/tmp_source.txt"
   ;
 
   // const char* lex_str = ""

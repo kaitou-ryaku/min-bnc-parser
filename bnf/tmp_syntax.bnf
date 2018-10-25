@@ -1,0 +1,7 @@
+//動く
+// "PROGRAM : ( semicolon | HOGE )( semicolon | HOGE ) *"  "\n"
+// "HOGE    : identify"               "\n"
+
+//動かない
+ "PROGRAM : ( semicolon | HOGE ) ( semicolon | HOGE ) *"  "\n"
+ "HOGE    : identify"               "\n"
