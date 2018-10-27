@@ -44,7 +44,7 @@
 "ENUM_SPECIFIER             : ( enum identifier lbracket ENUMERATOR_LIST rbracket | enum lbracket ENUMERATOR_LIST rbracket | enum identifier )" "\n"
 "ENUMERATOR_LIST            : ( ENUMERATOR | ENUMERATOR_LIST comma ENUMERATOR )" "\n"
 "ENUMERATOR                 : ( identifier | identifier equal CONSTANT_EXPRESSION )" "\n"
-"TYPEDEF_NAME               : identifier" "\n"
+//"TYPEDEF_NAME               : identifier" "\n"
 "DECLARATION                :  DECLARATION_SPECIFIER DECLARATION_SPECIFIER * INIT_DECLARATOR * semicolon" "\n"
 "INIT_DECLARATOR            : ( DECLARATOR | DECLARATOR equal INITIALIZER )" "\n"
 "INITIALIZER                : ( ASSIGNMENT_EXPRESSION | lbracket INITIALIZER_LIST rbracket | lbracket INITIALIZER_LIST comma rbracket )" "\n"
