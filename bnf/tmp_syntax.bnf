@@ -1,9 +1,18 @@
-"EXPRESSION_STATEMENT       : EXPRESSION semicolon" "\n"
-"EXPRESSION                 : ASSIGNMENT_EXPRESSION ( @ | comma ASSIGNMENT_EXPRESSION )" "\n"
-"ASSIGNMENT_EXPRESSION      : ( @ | HOGE equal ) integer_constant" "\n"
+//"a=1;"
 
 // 動く
-"HOGE : identifier" "\n"
+"A : B ( @ | comma ) semicolon" "\n"
+"B : ( @ | D equal ) integer_constant" "\n"
+"D : ( @ | comma ) identifier" "\n"
 
-// 動かない
-//"HOGE : ( @ | sizeof ) identifier" "\n"
+//// 動く
+//"A : X semicolon" "\n"
+//"X : B ( @ | comma )" "\n"
+//"B : ( @ | D equal ) integer_constant" "\n"
+//"D : identifier" "\n"
+
+//// 動かない
+//"A : X semicolon" "\n"
+//"X : B ( @ | comma )" "\n"
+//"B : ( @ | D equal ) integer_constant" "\n"
+//"D : ( @ | comma ) identifier" "\n"
