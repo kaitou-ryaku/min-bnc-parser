@@ -1,8 +1,25 @@
 //"a;"
 
-// 動かない。Xを消してAの行に埋め込むと動く。あるいは( @ | comma )の少なくとも1つを取ると動く
+// 動かない
+//"A :               identifier               semicolon" "\n"
+
+// 動く
+//"A :               X                        semicolon" "\n"
+//"X :               identifier"                         "\n"
+
+// 動く
+//"A :               identifier               Y"         "\n"
+//"Y :                                        semicolon" "\n"
+
+// 動く
+//"A : ( @ | comma ) identifier               semicolon" "\n"
+
+// 動く
+//"A :               identifier ( @ | comma ) semicolon" "\n"
+
+// 動く
+//"A : ( @ | comma ) identifier ( @ | comma )"           "\n"
+
+// 動かない。( @ | comma )の少なくとも1つを取ると動く
 //"A : X semicolon" "\n"
 //"X : ( @ | comma ) identifier ( @ | comma )" "\n"
-
-// 動かない。むりやり X を作って二行にすると動く
-// "A : identifier semicolon" "\n"
