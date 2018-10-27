@@ -22,13 +22,10 @@
 
 
 // 動く
-//"UNARY_EXPRESSION  : ( integer_constant | identifier )" "\n"
-
-
+"UNARY_EXPRESSION  : ( integer_constant | identifier )" "\n"
 
 // 動かない
-"UNARY_EXPRESSION           : ( @ | plus_plus | minus_minus | sizeof | UNARY_OPERATOR ) POSTFIX_EXPRESSION" "\n"
-"POSTFIX_EXPRESSION  : ( integer_constant | identifier )" "\n"
+//"UNARY_EXPRESSION    : ( @ | sizeof )( integer_constant | identifier )" "\n"
 
 
 
