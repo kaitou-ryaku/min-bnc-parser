@@ -1,1 +1,5 @@
-"hoge piyo"
+"a=func(a);"
+// 動いた
+
+// ダメ
+// "a=func(a);"
