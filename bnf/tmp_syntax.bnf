@@ -1,7 +1,6 @@
 "EXPRESSION_STATEMENT       : EXPRESSION semicolon" "\n"
 "EXPRESSION                 : ASSIGNMENT_EXPRESSION ( @ | comma ASSIGNMENT_EXPRESSION )" "\n"
-"ASSIGNMENT_EXPRESSION      : ( @ | HOGE equal ) CONDITIONAL_EXPRESSION" "\n"
-"CONDITIONAL_EXPRESSION     : integer_constant" "\n"
+"ASSIGNMENT_EXPRESSION      : ( @ | HOGE equal ) integer_constant" "\n"
 
 // 動く
 "HOGE : identifier" "\n"
