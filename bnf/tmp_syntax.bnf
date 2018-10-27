@@ -1,37 +1,10 @@
 "EXPRESSION_STATEMENT       : ( @ | EXPRESSION ) semicolon" "\n"
 "EXPRESSION                 : ASSIGNMENT_EXPRESSION ( @ | comma ASSIGNMENT_EXPRESSION )" "\n"
-"ASSIGNMENT_EXPRESSION      : ( @ | UNARY_EXPRESSION ASSIGNMENT_OPERATOR ) CONDITIONAL_EXPRESSION" "\n"
-"CONSTANT                   : ( integer_constant | character_constant | floating_constant | enumeration_constant )" "\n"
-"ASSIGNMENT_OPERATOR        : ( equal | star_equal | slash_equal | percent_equal | plus_equal | minus_equal | langle_langle_equal | rangle_rangle_equal | ampasand_equal | hat_equal | pipe_equal )" "\n"
-"UNARY_OPERATOR             : ( ampasand | star | plus | minus | tilda | exclamation )" "\n"
-"TYPE_NAME                  : ( int | char )" "\n"
-
-"CONDITIONAL_EXPRESSION     : LOGICAL_OR_EXPRESSION" "\n"
-"LOGICAL_OR_EXPRESSION      : LOGICAL_AND_EXPRESSION ( pipe_pipe LOGICAL_AND_EXPRESSION ) *" "\n"
-"LOGICAL_AND_EXPRESSION     : INCLUSIVE_OR_EXPRESSION ( ampasand_ampasand INCLUSIVE_OR_EXPRESSION ) *" "\n"
-"INCLUSIVE_OR_EXPRESSION    : EXCLUSIVE_OR_EXPRESSION ( pipe EXCLUSIVE_OR_EXPRESSION ) *" "\n"
-"EXCLUSIVE_OR_EXPRESSION    : AND_EXPRESSION ( hat AND_EXPRESSION ) *" "\n"
-"AND_EXPRESSION             : EQUALITY_EXPRESSION ( ampasand_ampasand EQUALITY_EXPRESSION ) *" "\n"
-"EQUALITY_EXPRESSION        : RELATIONAL_EXPRESSION ( equal_equal RELATIONAL_EXPRESSION | exclamation_equal RELATIONAL_EXPRESSION ) *" "\n"
-"RELATIONAL_EXPRESSION      : SHIFT_EXPRESSION ( langle SHIFT_EXPRESSION | rangle SHIFT_EXPRESSION | langle_equal SHIFT_EXPRESSION | rangle_equal SHIFT_EXPRESSION ) *" "\n"
-"SHIFT_EXPRESSION           : ADDITIVE_EXPRESSION ( langle_langle ADDITIVE_EXPRESSION | rangle_rangle ADDITIVE_EXPRESSION ) *" "\n"
-"ADDITIVE_EXPRESSION        : MULTIPLICATIVE_EXPRESSION ( plus MULTIPLICATIVE_EXPRESSION | minus MULTIPLICATIVE_EXPRESSION ) *" "\n"
-"MULTIPLICATIVE_EXPRESSION  : CAST_EXPRESSION ( @ | star CAST_EXPRESSION | slash CAST_EXPRESSION | percent CAST_EXPRESSION )" "\n"
-"CAST_EXPRESSION            : ( @ | lparen TYPE_NAME rparen ) UNARY_EXPRESSION" "\n"
-
-
+"ASSIGNMENT_EXPRESSION      : ( @ | HOGE equal ) CONDITIONAL_EXPRESSION" "\n"
+"CONDITIONAL_EXPRESSION     : integer_constant ( plus integer_constant ) *" "\n"
 
 // 動く
-"UNARY_EXPRESSION  : ( integer_constant | identifier )" "\n"
+//"HOGE : identifier" "\n"
 
 // 動かない
-//"UNARY_EXPRESSION    : ( @ | sizeof )( integer_constant | identifier )" "\n"
-
-
-
-//////"POSTFIX_EXPRESSION         : PRIMARY_EXPRESSION ( @ | dot identifier | minus_rangle identifier | plus_plus | minus_minus )" "\n"
-//////"PRIMARY_EXPRESSION         : ( identifier | CONSTANT | string | sizeof TYPE_NAME )" "\n"
-//////
-////////"CONDITIONAL_EXPRESSION     : LOGICAL_OR_EXPRESSION ( @ | question EXPRESSION colon EXPRESSION )" "\n"
-////////"POSTFIX_EXPRESSION         : PRIMARY_EXPRESSION ( @ | lbrace EXPRESSION rbrace | lparen ASSIGNMENT_EXPRESSION * rparen | dot identifier | minus_rangle identifier | plus_plus | minus_minus )" "\n"
-////////"PRIMARY_EXPRESSION         : ( identifier | CONSTANT | string | sizeof TYPE_NAME | lparen EXPRESSION rparen )" "\n"
+"HOGE : ( @ | sizeof ) identifier" "\n"
