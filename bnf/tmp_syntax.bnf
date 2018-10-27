@@ -1,18 +1,8 @@
 //"a=1;"
 
-// 動く
-"A : B ( @ | comma ) semicolon" "\n"
-"B : ( @ | D equal ) integer_constant" "\n"
-"D : ( @ | comma ) identifier" "\n"
-
-//// 動く
-//"A : X semicolon" "\n"
-//"X : B ( @ | comma )" "\n"
-//"B : ( @ | D equal ) integer_constant" "\n"
-//"D : identifier" "\n"
-
 //// 動かない
 //"A : X semicolon" "\n"
-//"X : B ( @ | comma )" "\n"
-//"B : ( @ | D equal ) integer_constant" "\n"
-//"D : ( @ | comma ) identifier" "\n"
+//"X : ( @ | comma ) identifier equal integer_constant ( @ | comma )" "\n"
+
+// 動く
+"A : ( @ | comma ) identifier equal integer_constant ( @ | comma ) semicolon" "\n"
