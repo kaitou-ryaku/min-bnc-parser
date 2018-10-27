@@ -3,7 +3,7 @@
 "ARGUMENTS          : ( @ | EXPRESSION ( comma EXPRESSION ) * )"                                                                          "\n"
 "EXPRESSION         : FORMULA ( compare_operator FORMULA ) *"                                                                             "\n"
 "FORMULA            : ( @ | term_operator ) TERM ( term_operator TERM ) *"                                                                "\n"
-"TERM               : FACTOR ( @ |factor_operator FACTOR ) *"                                                                             "\n"
+"TERM               : FACTOR ( @ | factor_operator FACTOR ) *"                                                                            "\n"
 "FACTOR             : ( IMMEDIATE | lparen EXPRESSION rparen | CALL | VARIABLE )"                                                         "\n"
 "B_OPERATOR         : ( term_operator | factor_operator | compare_operator )"                                                             "\n"
 "IMMEDIATE          : number"                                                                                                             "\n"
