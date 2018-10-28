@@ -191,7 +191,7 @@ extern int parse_token_list(/*{{{*/
   , const int        memo_max_size
 ) {
 
-  const int memo_size = 255*token[0].used_size*token[0].used_size;
+  const int memo_size = 255*(token[0].used_size+1)*(token[0].used_size+1);
   assert(memo_size < memo_max_size);
   for (int i=0; i<memo_max_size; i++) memo[i] = true;
 
@@ -222,8 +222,13 @@ static int parse_match_exact(/*{{{*/
   if (token_begin_index > token_end_index) return pt_empty_index;
 
   fprintf(stderr, "hogehoge1\n");
+
+  const int bug = bnf_token_to_memo_index(168, 3, 3, token);
+  if (memo[bug]) fprintf(stderr, "NOT BUG\n");
+  else fprintf(stderr, "KOREYA BUG\n");
+
   const int memo_index = bnf_token_to_memo_index(bnf_index, token_begin_index, token_end_index, token);
-  //if (!(memo[memo_index])) return pt_empty_index;
+  if (!(memo[memo_index])) return pt_empty_index;
   fprintf(stderr, "hogehoge2\n");
 
   int step = pt_empty_index;
@@ -509,8 +514,8 @@ static void delete_parse_tree_single(const int id, PARSE_TREE* pt) {/*{{{*/
   }
 }/*}}}*/
 static int bnf_token_to_memo_index(const int bnf_id, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token) {/*{{{*/
-  const int ts = token[0].used_size;
-  fprintf(stderr, "token_used_size:%d bnf_id:%d token[%d:%d]\n", ts, bnf_id, token_begin_index, token_end_index);
+  const int ts = token[0].used_size+1;
+  fprintf(stderr, "ret:%d token_used_size:%d bnf_id:%d token[%d:%d]\n", bnf_id*ts*ts + token_begin_index*ts + token_end_index, ts, bnf_id, token_begin_index, token_end_index);
   return bnf_id*ts*ts + token_begin_index*ts + token_end_index;
 }/*}}}*/
 static void back_track_update_index(/*{{{*/
