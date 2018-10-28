@@ -60,8 +60,9 @@ extern int create_syntax(/*{{{*/
 
         if (cmp_index < 0) {
           fprintf(stderr, "ERROR: NO TOKEN OR ATTRIBUTE EXISTS IN LEFT SIDE OF BNF ... ");
+          fprintf(stderr, "[[[");
           for (int i=begin; i<end; i++) fprintf(stderr, "%c", (bnf[index].def)[i]);
-          fprintf(stderr, "\n");
+          fprintf(stderr, "]]]\n");
         }
       }
 

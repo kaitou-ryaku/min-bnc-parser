@@ -1,25 +1,20 @@
-//"a;"
-
-// 動かない
-//"A :               identifier               semicolon" "\n"
-
-// 動く
-//"A :               X                        semicolon" "\n"
-//"X :               identifier"                         "\n"
-
-// 動く
-//"A :               identifier               Y"         "\n"
-//"Y :                                        semicolon" "\n"
-
-// 動く
-//"A : ( @ | comma ) identifier               semicolon" "\n"
-
-// 動く
-//"A :               identifier ( @ | comma ) semicolon" "\n"
-
-// 動く
-//"A : ( @ | comma ) identifier ( @ | comma )"           "\n"
-
-// 動かない。( @ | comma )の少なくとも1つを取ると動く
-//"A : X semicolon" "\n"
-//"X : ( @ | comma ) identifier ( @ | comma )" "\n"
+"PROGRAM            : ( V_DEC semicolon | F_DEC | PROTOTYPE semicolon ) *"                                                                "\n"
+"F_DEC              : TYPE VARIABLE lparen ( @ | V_DEC ( comma V_DEC ) * ) rparen FUNCTION"                                               "\n"
+"PROTOTYPE          : TYPE VARIABLE lparen ( @ | V_DEC ( comma V_DEC ) * ) rparen"                                                        "\n"
+"V_DEC              : TYPE VARIABLE"                                                                                                      "\n"
+"FUNCTION           : lbracket ( V_DEC semicolon ) * SENTENCE * rbracket"                                                                 "\n"
+"SENTENCE           : ( semicolon | lbracket SENTENCE * rbracket | IF_FLOW | WHILE_FLOW | RETURN | CALL semicolon | ASSIGN )"             "\n"
+"IF_FLOW            : if_keyword lparen EXPRESSION rparen lbracket SENTENCE * rbracket ( @ | else_keyword lbracket SENTENCE * rbracket )" "\n"
+"WHILE_FLOW         : while_keyword lparen EXPRESSION rparen lbracket SENTENCE * rbracket"                                                "\n"
+"RETURN             : return_keyword EXPRESSION semicolon"                                                                                "\n"
+"ASSIGN             : VARIABLE equal EXPRESSION semicolon"                                                                                "\n"
+"CALL               : VARIABLE lparen ( @ | ARGUMENTS ) rparen"                                                                           "\n"
+"ARGUMENTS          : ( @ | EXPRESSION ( comma EXPRESSION ) * )"                                                                          "\n"
+"EXPRESSION         : FORMULA ( compare_operator FORMULA ) *"                                                                             "\n"
+"FORMULA            : ( @ | term_operator ) TERM ( term_operator TERM ) *"                                                                "\n"
+"TERM               : FACTOR ( @ | factor_operator FACTOR ) *"                                                                            "\n"
+"FACTOR             : ( IMMEDIATE | lparen EXPRESSION rparen | CALL | VARIABLE )"                                                         "\n"
+"B_OPERATOR         : ( term_operator | factor_operator | compare_operator )"                                                             "\n"
+"IMMEDIATE          : number"                                                                                                             "\n"
+"VARIABLE           : identify"                                                                                                           "\n"
+"TYPE               : type_keyword"                                                                                                       "\n"
