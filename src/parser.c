@@ -29,10 +29,11 @@ static int parse_match_exact(
   , PARSE_TREE*      pt
   , bool*            memo
 );
-static int parse_match_longest(
+static int parse_match_shortest(
   const   int        bnf_index
   , const int        token_begin_index
   , const int        token_end_index
+  , const int        token_final_index
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
@@ -56,6 +57,7 @@ static int bnf_token_to_memo_index(const int bnf_id, const int token_begin_index
 static void back_track_update_index(
   const   int   bnf_index
   , const int   right_side_before_match
+  , const int   token_end_index
   , int*        current_pt_index
   , int*        current_token_begin_index
   , int*        current_token_end_index
@@ -286,10 +288,11 @@ static int parse_match_exact(/*{{{*/
 
   return step;
 }/*}}}*/
-static int parse_match_longest(/*{{{*/
+static int parse_match_shortest(/*{{{*/
   const   int        bnf_index
   , const int        token_begin_index
   , const int        token_end_index
+  , const int        token_final_index
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
@@ -298,7 +301,7 @@ static int parse_match_longest(/*{{{*/
 ) {
 
   int step = pt_empty_index;
-  for (int tmp_end=token_end_index; token_begin_index <= tmp_end; tmp_end--) {
+  for (int tmp_end=token_end_index; tmp_end <= token_final_index; tmp_end++) {
     const int new_step = parse_match_exact(bnf_index, token_begin_index, tmp_end, step, token, bnf, pt, memo);
     if (step < new_step) {
       step = new_step;
@@ -329,13 +332,14 @@ static int parse_syntax_recursive(/*{{{*/
 
   const int left_side = pt_empty_index;
   int current_token_begin_index = token_begin_index;
-  int current_token_end_index   = token_end_index;
+  int current_token_end_index   = token_begin_index;
 
   int current_node_index = 0;
-  int current_pt_index = parse_match_longest(
+  int current_pt_index = parse_match_shortest(
     node_to_bnf_id(node[current_node_index], bnf)
     , current_token_begin_index
-    , current_token_begin_index
+    , current_token_end_index
+    , token_end_index
     , left_side
     , token
     , bnf
@@ -357,10 +361,11 @@ static int parse_syntax_recursive(/*{{{*/
 
     // マッチング/*{{{*/
     const int current_bnf_index = node_to_bnf_id(node[current_node_index], bnf);
-    const int next_pt_index = parse_match_longest(
+    const int next_pt_index = parse_match_shortest(
       current_bnf_index
       , current_token_begin_index
       , current_token_end_index
+      , token_end_index
       , current_pt_index
       , token
       , bnf
@@ -401,7 +406,7 @@ static int parse_syntax_recursive(/*{{{*/
 
       // トークンを更新して次のノードに移動
       current_token_begin_index = pt[current_pt_index].token_end_index;
-      current_token_end_index   = token_end_index;
+      current_token_end_index   = current_token_begin_index;
       current_node_index = node[current_node_index].out_fst;
       current_pt_index = next_pt_index;
     }/*}}}*/
@@ -424,6 +429,7 @@ static int parse_syntax_recursive(/*{{{*/
 
       back_track_update_index(
         bnf_index
+        , token_end_index
         , right_side_before_match
         , &current_pt_index
         , &current_token_begin_index
@@ -475,6 +481,7 @@ static int bnf_token_to_memo_index(const int bnf_id, const int token_begin_index
 }/*}}}*/
 static void back_track_update_index(/*{{{*/
   const   int   bnf_index
+  , const int   token_end_index
   , const int   right_side_before_match
   , int*        current_pt_index
   , int*        current_token_begin_index
@@ -496,6 +503,9 @@ static void back_track_update_index(/*{{{*/
     if (target_node.out_fst == right_node_index && target_node.out_snd >= 0) {
       pt[pt_index].right           = -1; // 分岐発生ノードの以前の接続情報を削除
       (*current_node_index)        = target_node.out_snd;
+      (*current_token_begin_index) = target_pt.token_end_index;
+      (*current_token_end_index)   = target_pt.token_end_index;
+      //TODO
       break;
 
     // 最初の^ノードに到達した場合、終了
@@ -509,11 +519,11 @@ static void back_track_update_index(/*{{{*/
       break;
 
     // 分岐ではなく、トークンが残っていれば、そのノードを再探索
-    } else if (target_pt.token_begin_index < target_pt.token_end_index) {
+    } else if (target_pt.token_end_index < token_end_index) {
       pt[pt[pt_index].left].right  = -1; // 分岐発生ノードの以前の接続情報を削除
       (*current_node_index)        = target_pt.up_bnf_node_index;
       (*current_token_begin_index) = target_pt.token_begin_index;
-      (*current_token_end_index)   = target_pt.token_end_index-1;
+      (*current_token_end_index)   = target_pt.token_end_index+1;
       (*current_pt_index)          = right_side_before_match;
       break;
 
