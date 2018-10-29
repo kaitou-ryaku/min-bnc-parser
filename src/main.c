@@ -14,6 +14,9 @@ int main(void) {
   //const char* syntax_str = ""
   //  #include "../bnf/c_syntax.bnf"
   //;
+  //const char* pair_str = ""
+  //  #include "../bnf/c_pair.txt"
+  //;
   //const char* src_str = ""
   //  #include "../bnf/c_source.txt"
   //;
@@ -24,32 +27,38 @@ int main(void) {
   //const char* syntax_str = ""
   //  #include "../bnf/minc_syntax.bnf"
   //;
+  //const char* pair_str = ""
+  //  #include "../bnf/minc_pair.txt"
+  //;
   //const char* src_str = ""
   //  #include "../bnf/minc_source.txt"
   //;
 
+  //const char* lex_str = ""
+  //  #include "../bnf/tmp_lex.bnf"
+  //;
+  //const char* syntax_str = ""
+  //  #include "../bnf/tmp_syntax.bnf"
+  //;
+  //const char* pair_str = ""
+  //  #include "../bnf/tmp_pair.txt"
+  //;
+  //const char* src_str = ""
+  //  #include "../bnf/tmp_source.txt"
+  //;
+
   const char* lex_str = ""
-    #include "../bnf/tmp_lex.bnf"
+    #include "../bnf/math_lex.bnf"
   ;
   const char* syntax_str = ""
-    #include "../bnf/tmp_syntax.bnf"
+    #include "../bnf/math_syntax.bnf"
   ;
   const char* pair_str = ""
-    #include "../bnf/tmp_pair.txt"
+    #include "../bnf/math_pair.txt"
   ;
   const char* src_str = ""
-    #include "../bnf/tmp_source.txt"
+    #include "../bnf/math_source.txt"
   ;
-
-  // const char* lex_str = ""
-  //   #include "../bnf/math_lex.bnf"
-  // ;
-  // const char* syntax_str = ""
-  //   #include "../bnf/math_syntax.bnf"
-  // ;
-  // const char* src_str = ""
-  //   #include "../bnf/math_source.txt"
-  // ;
 
   BNF bnf[255]; // char:255文字のアルファベットに対応
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));
@@ -105,25 +114,25 @@ int main(void) {
   fprintf(stderr, "pair size : %d\n", pair_size);
   print_pair_bnf(stderr, pair_bnf, bnf);
 
-  //LEX_TOKEN token[1000];
-  //const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
-  //print_token(stderr, bnf, token, token_size);
+  LEX_TOKEN token[1000];
+  const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
+  print_token(stderr, bnf, token, token_size);
 
-  //PARSE_TREE pt[5000];
-  //static bool memo[255*2000*2000];
-  //parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
+  PARSE_TREE pt[5000];
+  static bool memo[255*2000*2000];
+  parse_token_list(token, bnf, pair_bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
 
-  //{
-  //  FILE *fp;
-  //  char *filename = "parse_tree.dot";
-  //  if ((fp = fopen(filename, "w")) == NULL) {
-  //    fprintf(stderr, "Failed to open %s.\n", filename);
-  //  }
+  {
+    FILE *fp;
+    char *filename = "parse_tree.dot";
+    if ((fp = fopen(filename, "w")) == NULL) {
+      fprintf(stderr, "Failed to open %s.\n", filename);
+    }
 
-  //  origin_parse_tree_to_dot(fp, 0, pt, bnf, token, "12.0", NULL, "#FF0000", "#000000");
+    origin_parse_tree_to_dot(fp, 0, pt, bnf, token, "12.0", NULL, "#FF0000", "#000000");
 
-  //  fclose(fp);
-  //}
+    fclose(fp);
+  }
 
   return 0;
 }

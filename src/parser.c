@@ -1,6 +1,7 @@
 #include "../include/common.h"
 #include "../include/bnf.h"
 #include "../include/syntax.h"
+#include "../include/pair_bnf.h"
 #include "../min-regex/include/min-regex.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -26,6 +27,7 @@ static int parse_match_exact(
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , bool*            memo
 );
@@ -37,6 +39,7 @@ static int parse_match_shortest(
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , bool*            memo
 );
@@ -47,6 +50,7 @@ static int parse_syntax_recursive(
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , bool*            memo
 );
@@ -186,6 +190,7 @@ static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const
 extern int parse_token_list(/*{{{*/
   const   LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , const int        pt_max_size
   , bool*            memo
@@ -200,7 +205,7 @@ extern int parse_token_list(/*{{{*/
 
   const int begin_bnf_index = search_bnf_next_syntax(-1, bnf);
 
-  int step = parse_match_exact(begin_bnf_index, 0, token[0].used_size, 0, token, bnf, pt, memo);
+  int step = parse_match_exact(begin_bnf_index, 0, token[0].used_size, 0, token, bnf, pair_bnf, pt, memo);
 
   fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
   print_parse_tree(stderr, step, pt, bnf, token);
@@ -215,6 +220,7 @@ static int parse_match_exact(/*{{{*/
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , bool*            memo
 ) {
@@ -252,12 +258,14 @@ static int parse_match_exact(/*{{{*/
   }
 
   // 受け取ったBNFがSYNTAXの場合
-  else if (is_syntax(bnf[bnf_index])) {
+  else if (is_syntax(bnf[bnf_index])
+    && is_valid_paren_token(token_begin_index, token_end_index, token, pair_bnf)
+  ) {
 
     pt[step].state = 3;
 
     // TODO 下のノードを再帰的に解析
-    const int new_step = parse_syntax_recursive(bnf_index, token_begin_index, token_end_index, step+1, token, bnf, pt, memo);
+    const int new_step = parse_syntax_recursive(bnf_index, token_begin_index, token_end_index, step+1, token, bnf, pair_bnf, pt, memo);
 
     if (step+1 < new_step) {
       // 再帰的構文解析に成功すれば、上を下の左端と接続
@@ -296,13 +304,14 @@ static int parse_match_shortest(/*{{{*/
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , bool*            memo
 ) {
 
   int step = pt_empty_index;
   for (int tmp_end=token_end_index; tmp_end <= token_final_index; tmp_end++) {
-    const int new_step = parse_match_exact(bnf_index, token_begin_index, tmp_end, step, token, bnf, pt, memo);
+    const int new_step = parse_match_exact(bnf_index, token_begin_index, tmp_end, step, token, bnf, pair_bnf, pt, memo);
     if (step < new_step) {
       step = new_step;
       break;
@@ -318,6 +327,7 @@ static int parse_syntax_recursive(/*{{{*/
   , const int        pt_empty_index
   , const LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , bool*            memo
 ) {
@@ -343,6 +353,7 @@ static int parse_syntax_recursive(/*{{{*/
     , left_side
     , token
     , bnf
+    , pair_bnf
     , pt
     , memo
   );
@@ -369,6 +380,7 @@ static int parse_syntax_recursive(/*{{{*/
       , current_pt_index
       , token
       , bnf
+      , pair_bnf
       , pt
       , memo
     );

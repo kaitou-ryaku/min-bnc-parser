@@ -7,6 +7,7 @@
 int parse_token_list(
   const   LEX_TOKEN* token
   , const BNF*       bnf
+  , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , const int        pt_max_size
   , bool*            memo

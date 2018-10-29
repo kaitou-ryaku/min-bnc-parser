@@ -4,8 +4,9 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 
-extern int create_pair_bnf(
+extern int create_pair_bnf(/*{{{*/
   const char*       pair_bnf_str
   , BNF*            bnf
   , PAIR_BNF*       pair_bnf
@@ -51,10 +52,35 @@ extern int create_pair_bnf(
   }
 
   return line_total;
-}
-
-extern void print_pair_bnf(FILE *fp, const PAIR_BNF* pair_bnf, const BNF* bnf) {
+}/*}}}*/
+extern void print_pair_bnf(FILE *fp, const PAIR_BNF* pair_bnf, const BNF* bnf) {/*{{{*/
   for (int i=0; i<pair_bnf[0].used_size; i++) {
     fprintf(fp, "%d | %s %s   -   %s %s\n", i, bnf[pair_bnf[i].left_bnf_id].name, bnf[pair_bnf[i].left_bnf_id].def, bnf[pair_bnf[i].right_bnf_id].name, bnf[pair_bnf[i].right_bnf_id].def);
   }
-}
+}/*}}}*/
+extern bool is_valid_paren_token(/*{{{*/
+  const   int        token_begin_index
+  , const int        token_end_index
+  , const LEX_TOKEN* token
+  , const PAIR_BNF*  pair_bnf
+) {
+
+  bool ret=true;
+
+  for (int pair_index=0; pair_index<pair_bnf[0].used_size; pair_index++) {
+    if (!ret) break;
+    const int left  = pair_bnf[pair_index].left_bnf_id;
+    const int right = pair_bnf[pair_index].right_bnf_id;
+
+    int count = 0;
+    for (int token_index=token_begin_index; token_index<token_end_index; token_index++) {
+      if (!ret) break;
+      if (token[token_index].kind == left) count++;
+      if (token[token_index].kind == right) count--;
+      if (count < 0) ret = false;
+    }
+    if (count != 0) ret = false;
+  }
+
+  return ret;
+}/*}}}*/
