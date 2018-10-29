@@ -2,6 +2,7 @@
 #include "../include/lexer.h"
 #include "../include/syntax.h"
 #include "../include/parser.h"
+#include "../include/pair_bnf.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -32,6 +33,9 @@ int main(void) {
   ;
   const char* syntax_str = ""
     #include "../bnf/tmp_syntax.bnf"
+  ;
+  const char* pair_str = ""
+    #include "../bnf/tmp_pair.txt"
   ;
   const char* src_str = ""
     #include "../bnf/tmp_source.txt"
@@ -91,25 +95,35 @@ int main(void) {
     fclose(fp);
   }
 
-  LEX_TOKEN token[1000];
-  const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
-  print_token(stderr, bnf, token, token_size);
+  PAIR_BNF pair_bnf[100];
 
-  PARSE_TREE pt[5000];
-  static bool memo[255*2000*2000];
-  parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
+  const int pair_size = create_pair_bnf(
+    pair_str, bnf
+    , pair_bnf, sizeof(pair_bnf) / sizeof(PAIR_BNF)
+  );
 
-  {
-    FILE *fp;
-    char *filename = "parse_tree.dot";
-    if ((fp = fopen(filename, "w")) == NULL) {
-      fprintf(stderr, "Failed to open %s.\n", filename);
-    }
+  fprintf(stderr, "pair size : %d\n", pair_size);
+  print_pair_bnf(stderr, pair_bnf, bnf);
 
-    origin_parse_tree_to_dot(fp, 0, pt, bnf, token, "12.0", NULL, "#FF0000", "#000000");
+  //LEX_TOKEN token[1000];
+  //const int token_size = match_lexer(token, sizeof(token)/sizeof(LEX_TOKEN), bnf, src_str);
+  //print_token(stderr, bnf, token, token_size);
 
-    fclose(fp);
-  }
+  //PARSE_TREE pt[5000];
+  //static bool memo[255*2000*2000];
+  //parse_token_list(token, bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
+
+  //{
+  //  FILE *fp;
+  //  char *filename = "parse_tree.dot";
+  //  if ((fp = fopen(filename, "w")) == NULL) {
+  //    fprintf(stderr, "Failed to open %s.\n", filename);
+  //  }
+
+  //  origin_parse_tree_to_dot(fp, 0, pt, bnf, token, "12.0", NULL, "#FF0000", "#000000");
+
+  //  fclose(fp);
+  //}
 
   return 0;
 }

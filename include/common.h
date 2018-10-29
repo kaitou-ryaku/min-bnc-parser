@@ -50,4 +50,12 @@ typedef struct {
   int  right;
 } PARSE_TREE;
 
+typedef struct {
+  int  id;
+  int  total_size;
+  int  used_size;
+  int  left_bnf_id;
+  int  right_bnf_id;
+} PAIR_BNF;
+
 #endif
