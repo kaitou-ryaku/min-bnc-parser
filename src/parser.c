@@ -19,7 +19,6 @@ static void initialize_parse_tree_unit(
   PARSE_TREE*        pt
   , const int        index
 );
-static bool is_same_pt_exist(const int target_pt_id, const int origin_pt_id, const PARSE_TREE* pt);
 static int parse_match_exact(
   const   int        bnf_index
   , const int        token_begin_index
@@ -217,19 +216,11 @@ static int parse_match_exact(/*{{{*/
   , PARSE_TREE*      pt
   , bool*            memo
 ) {
-  fprintf(stderr, "begin exact match %s (state:%d) token[%d,%d] pt_empty_index:%d\n", bnf[bnf_index].name, bnf[bnf_index].state, token_begin_index, token_end_index, pt_empty_index);
 
   if (token_begin_index > token_end_index) return pt_empty_index;
 
-  fprintf(stderr, "hogehoge1\n");
-
-  const int bug = bnf_token_to_memo_index(168, 3, 3, token);
-  if (memo[bug]) fprintf(stderr, "NOT BUG\n");
-  else fprintf(stderr, "KOREYA BUG\n");
-
   const int memo_index = bnf_token_to_memo_index(bnf_index, token_begin_index, token_end_index, token);
   if (!(memo[memo_index])) return pt_empty_index;
-  fprintf(stderr, "hogehoge2\n");
 
   int step = pt_empty_index;
 
@@ -243,7 +234,6 @@ static int parse_match_exact(/*{{{*/
   if ( (is_meta(bnf[bnf_index]))
     && (token_begin_index == token_end_index)
   ) {
-    fprintf(stderr, "hogehoge3\n");
 
     pt[step].state = 1;
     step++;
@@ -254,7 +244,6 @@ static int parse_match_exact(/*{{{*/
     && (token_begin_index + 1 == token_end_index)
     && (bnf[bnf_index].kind == token[token_begin_index].kind)
   ) {
-  fprintf(stderr, "hogehoge4\n");
 
     pt[step].state = 2;
     step++;
@@ -263,7 +252,6 @@ static int parse_match_exact(/*{{{*/
   // 受け取ったBNFがSYNTAXの場合
   else if (is_syntax(bnf[bnf_index])) {
 
-  fprintf(stderr, "hogehoge5\n");
     pt[step].state = 3;
 
     // TODO 下のノードを再帰的に解析
@@ -284,46 +272,19 @@ static int parse_match_exact(/*{{{*/
     }
   }
 
-  fprintf(stderr, "hogehoge6\n");
   // TODO
   // 他が解析中で無限ループ処理でsyntax_recursiveが止まったときもfalseになるからヤバイ？
   if (step <= pt_empty_index) memo[memo_index] = false;
 
-  if (step > pt_empty_index) {
-    hoge++;
-    if (hoge%1 == 0) {
-      fprintf(stderr, "hoge %d\n", hoge);
-      print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-    }
-  }
+  //if (step > pt_empty_index) {
+  //  hoge++;
+  //  if (hoge%1000 == 0) {
+  //    fprintf(stderr, "hoge %d\n", hoge);
+  //    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
+  //  }
+  //}
 
   return step;
-}/*}}}*/
-static bool is_same_pt_exist(const int target_pt_index, const int origin_pt_index, const PARSE_TREE* pt) {/*{{{*/
-  bool ret = false;
-  const PARSE_TREE target = pt[target_pt_index];
-  const PARSE_TREE origin = pt[origin_pt_index];
-
-  // 呼び出し元がis_same_pt_exist(up, up)の場合は自己照合になるのでif文で弾いた
-  if (target_pt_index != origin_pt_index) {
-    if ( (target.bnf_id            == origin.bnf_id)
-      && (target.token_begin_index == origin.token_begin_index)
-      && (target.token_end_index   == origin.token_end_index)
-    ) {
-      ret = true;
-    }
-  }
-
-  // 呼び出し元がis_same_pt_exist(up, up)の場合にも実行される
-  if ((!ret) && (origin.left >= 0)) {
-    if (is_same_pt_exist(target_pt_index, origin.left, pt)) ret = true;
-
-  } else if ((!ret) && (origin.left < 0) && (origin.up >= 0)) {
-    if (is_same_pt_exist(target_pt_index, origin.up, pt)) ret = true;
-
-  }
-
-  return ret;
 }/*}}}*/
 static int parse_match_longest(/*{{{*/
   const   int        bnf_index
@@ -360,8 +321,8 @@ static int parse_syntax_recursive(/*{{{*/
 
   assert(is_syntax(bnf[bnf_index]));
 
-  // TODO これは同一の親内に限定しないとやばそう。。。いや解析前の判定だから大丈夫か
   // 親に繋がった全解析木の中で、同一syntax同一トークン列を再訪問してたら、解析せず、メモも更新しない
+  // この処理は左再帰の無限ループ対策だが、メモ化が難しくなるので、入れないことにする。BNFの左再帰は禁止で
   // if (is_same_pt_exist(up, up, pt)) return pt_empty_index;
 
   const MIN_REGEX_NODE* node = bnf[bnf_index].node;
@@ -461,10 +422,6 @@ static int parse_syntax_recursive(/*{{{*/
     // マッチ失敗 ($ノードで、トークンを残したままマッチした場合を含む) -> バックトラック/*{{{*/
     else {
 
-        fprintf(stderr, "current_pt:%d next_pt:%d --------------------------------------------------\n", current_pt_index, next_pt_index);
-        print_parse_tree(stderr, next_pt_index+2, pt, bnf, token);
-        fprintf(stderr, "before:bt %s rightside:%d current_pt:%d current_token[%d:%d] current_node:%d\n", bnf[bnf_index].name, right_side_before_match, current_pt_index, current_token_begin_index, current_token_end_index, current_node_index);
-
       back_track_update_index(
         bnf_index
         , right_side_before_match
@@ -476,7 +433,6 @@ static int parse_syntax_recursive(/*{{{*/
         , pt
       );
 
-        fprintf(stderr, "after :bt %s rightside:%d current_pt:%d current_token[%d:%d] current_node:%d\n", bnf[bnf_index].name, right_side_before_match, current_pt_index, current_token_begin_index, current_token_end_index, current_node_index);
       // ^ノードに到達したら、マッチ失敗として終了
       if (current_pt_index < 0) {
         current_pt_index = pt_empty_index;
@@ -515,7 +471,6 @@ static void delete_parse_tree_single(const int id, PARSE_TREE* pt) {/*{{{*/
 }/*}}}*/
 static int bnf_token_to_memo_index(const int bnf_id, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token) {/*{{{*/
   const int ts = token[0].used_size+1;
-  fprintf(stderr, "ret:%d token_used_size:%d bnf_id:%d token[%d:%d]\n", bnf_id*ts*ts + token_begin_index*ts + token_end_index, ts, bnf_id, token_begin_index, token_end_index);
   return bnf_id*ts*ts + token_begin_index*ts + token_end_index;
 }/*}}}*/
 static void back_track_update_index(/*{{{*/
@@ -531,16 +486,14 @@ static void back_track_update_index(/*{{{*/
 
   const MIN_REGEX_NODE* node = bnf[bnf_index].node;
   int pt_index = right_side_before_match;
+  int right_node_index = (*current_node_index);
 
-  int aaa = 0;
   while (1) {
     const PARSE_TREE target_pt = pt[pt_index];
     const MIN_REGEX_NODE target_node = node[target_pt.up_bnf_node_index];
-    fprintf(stderr, "aaa=%d pt_index:%d symbol:%c bnfname:%s\n", aaa, pt_index, target_node.symbol, bnf[node_to_bnf_id(target_node, bnf)].name);
-    aaa++;
 
     // バックトラック対象が分岐ノード
-    if (target_node.out_fst == (*current_node_index) && target_node.out_snd >= 0) {
+    if (target_node.out_fst == right_node_index && target_node.out_snd >= 0) {
       pt[pt_index].right           = -1; // 分岐発生ノードの以前の接続情報を削除
       (*current_node_index)        = target_node.out_snd;
       break;
@@ -566,6 +519,7 @@ static void back_track_update_index(/*{{{*/
 
     // さらにバックトラック
     } else {
+      right_node_index = target_pt.up_bnf_node_index;
       pt_index = target_pt.left;
     }
   }
