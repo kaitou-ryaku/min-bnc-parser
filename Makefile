@@ -1,9 +1,9 @@
 CC      := gcc
 CFLAGS  := -std=c99 -O0 -Wall
 
-ARCHIVE  := min-bnc-parser.a
+ARCHIVE  := min-bnf-parser.a
 REGEX    := min-regex/min-regex.a
-TARGET   := min-bnc-parser.out
+TARGET   := min-bnf-parser.out
 
 ALL_CH  := $(wildcard src/*.c include/*.h)
 ALL_BNF := $(wildcard bnf/*)
