@@ -1,0 +1,6 @@
+//"int a;"
+//"int main(void) {}"
+//"int main(void) { int a; a=3; hoge(a); return 0;}"
+//"int main(void) {printf(); return 0;}"
+// "extern void hoge(int a, char b, const int* c); int main(int argc, const char **argv) { if (argc != 2) { hoge(3, 4); return 1; } }"
+"int main(void) {hoge(1,2);}"
