@@ -9,6 +9,19 @@
 int main(void) {
 
   //const char* lex_str = ""
+  //  #include "../bnf/mod_c_lex.bnf"
+  //;
+  //const char* syntax_str = ""
+  //  #include "../bnf/mod_c_syntax.bnf"
+  //;
+  //const char* pair_str = ""
+  //  #include "../bnf/mod_c_pair.txt"
+  //;
+  //const char* src_str = ""
+  //  #include "../bnf/mod_c_source.txt"
+  //;
+
+  //const char* lex_str = ""
   //  #include "../bnf/c_lex.bnf"
   //;
   //const char* syntax_str = ""
@@ -34,31 +47,31 @@ int main(void) {
   //  #include "../bnf/minc_source.txt"
   //;
 
-  //const char* lex_str = ""
-  //  #include "../bnf/tmp_lex.bnf"
-  //;
-  //const char* syntax_str = ""
-  //  #include "../bnf/tmp_syntax.bnf"
-  //;
-  //const char* pair_str = ""
-  //  #include "../bnf/tmp_pair.txt"
-  //;
-  //const char* src_str = ""
-  //  #include "../bnf/tmp_source.txt"
-  //;
-
   const char* lex_str = ""
-    #include "../bnf/math_lex.bnf"
+    #include "../bnf/tmp_lex.bnf"
   ;
   const char* syntax_str = ""
-    #include "../bnf/math_syntax.bnf"
+    #include "../bnf/tmp_syntax.bnf"
   ;
   const char* pair_str = ""
-    #include "../bnf/math_pair.txt"
+    #include "../bnf/tmp_pair.txt"
   ;
   const char* src_str = ""
-    #include "../bnf/math_source.txt"
+    #include "../bnf/tmp_source.txt"
   ;
+
+  //const char* lex_str = ""
+  //  #include "../bnf/math_lex.bnf"
+  //;
+  //const char* syntax_str = ""
+  //  #include "../bnf/math_syntax.bnf"
+  //;
+  //const char* pair_str = ""
+  //  #include "../bnf/math_pair.txt"
+  //;
+  //const char* src_str = ""
+  //  #include "../bnf/math_source.txt"
+  //;
 
   BNF bnf[255]; // char:255文字のアルファベットに対応
   initialize_bnf(bnf, sizeof(bnf)/sizeof(BNF));

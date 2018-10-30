@@ -167,13 +167,24 @@ extern void origin_parse_tree_to_dot(FILE *fp, const int origin, const PARSE_TRE
 }/*}}}*/
 static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize, const char* meta_color, const char* lex_color, const char* syntax_color) {/*{{{*/
 
-  fprintf( fp, "  %05d [ fontsize=%s, shape=box, ", pt[origin].id, fontsize);
-  if      (is_meta(bnf[pt[origin].bnf_id]))   fprintf(fp, "color=\"%s\", ", meta_color);
-  else if (is_lex(bnf[pt[origin].bnf_id]))    fprintf(fp, "color=\"%s\", ", lex_color);
-  else if (is_syntax(bnf[pt[origin].bnf_id])) fprintf(fp, "color=\"%s\", ", syntax_color);
-  fprintf( fp, "label=\"%s\\n", bnf[pt[origin].bnf_id].name);
-
-  print_from_token_to_token(fp, pt[origin].token_begin_index, pt[origin].token_end_index, token);
+  fprintf(fp, "  %05d [ fontsize=%s, ", pt[origin].id, fontsize);
+  if      (is_meta(bnf[pt[origin].bnf_id])) {
+    fprintf(fp, "shape=circle, ");
+    fprintf(fp, "color=\"%s\", ", meta_color);
+    fprintf(fp, "label=\"%s", bnf[pt[origin].bnf_id].name);
+  }
+  else if (is_lex(bnf[pt[origin].bnf_id])) {
+    fprintf(fp, "shape=circle, ");
+    fprintf(fp, "color=\"%s\", ", lex_color);
+    fprintf(fp, "label=\"");
+    print_from_token_to_token(fp, pt[origin].token_begin_index, pt[origin].token_end_index, token);
+  }
+  else if (is_syntax(bnf[pt[origin].bnf_id])) {
+    fprintf(fp, "shape=box, ");
+    fprintf(fp, "color=\"%s\", ", syntax_color);
+    fprintf(fp, "label=\"%s\\n", bnf[pt[origin].bnf_id].name);
+    print_from_token_to_token(fp, pt[origin].token_begin_index, pt[origin].token_end_index, token);
+  }
 
   fprintf(fp, "\"]\n");
 
@@ -286,13 +297,13 @@ static int parse_match_exact(/*{{{*/
   // 他が解析中で無限ループ処理でsyntax_recursiveが止まったときもfalseになるからヤバイ？
   if (step <= pt_empty_index) memo[memo_index] = false;
 
-  //if (step > pt_empty_index) {
-  //  hoge++;
-  //  if (hoge%1000 == 0) {
-  //    fprintf(stderr, "hoge %d\n", hoge);
-  //    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-  //  }
-  //}
+  if (step > pt_empty_index) {
+    hoge++;
+    if (hoge%1 == 0) {
+      fprintf(stderr, "hoge %d\n", hoge);
+      print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
+    }
+  }
 
   return step;
 }/*}}}*/
