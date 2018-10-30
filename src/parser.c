@@ -8,7 +8,6 @@
 #include <string.h>
 #include <assert.h>
 
-static int hoge=0;
 // 関数プロトタイプ/*{{{*/
 static void print_from_token_to_token(FILE *fp, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token);
 static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
@@ -296,14 +295,6 @@ static int parse_match_exact(/*{{{*/
   // TODO
   // 他が解析中で無限ループ処理でsyntax_recursiveが止まったときもfalseになるからヤバイ？
   if (step <= pt_empty_index) memo[memo_index] = false;
-
-  //if (step > pt_empty_index) {
-  //  hoge++;
-  //  if (hoge%1 == 0) {
-  //    fprintf(stderr, "hoge %d\n", hoge);
-  //    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-  //  }
-  //}
 
   return step;
 }/*}}}*/
