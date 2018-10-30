@@ -1,1 +1,16 @@
 # BNCパーサを自作する
+
+### 日記
+
+### 2018 10/30
+K&R巻末のC言語BNFを注意深く編集して左再帰を除去したら、C言語のソースコードを解析木に変換できるようになった。
+ただし、関数呼出の引数が2個以上あると、なぜか解析に失敗する。
+* `EXPRESSION_STATEMENT`
+* `EXPRESSION`
+* `POSTFIX_EXPRESSION`
+あたりが怪しい。
+
+解決した。
+https://cs.wmich.edu/~gupta/teaching/cs4850/sumII06/The%20syntax%20of%20C%20in%20Backus-Naur%20form.htm
+のページのバグが原因だった。
+`<postfix-expression>`の`{<assignment-expression>}*`は`<argument-expression-list>`の間違いだ。やれやれ。

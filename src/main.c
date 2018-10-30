@@ -8,18 +8,18 @@
 
 int main(void) {
 
-  //const char* lex_str = ""
-  //  #include "../bnf/mod_c_lex.bnf"
-  //;
-  //const char* syntax_str = ""
-  //  #include "../bnf/mod_c_syntax.bnf"
-  //;
-  //const char* pair_str = ""
-  //  #include "../bnf/mod_c_pair.txt"
-  //;
-  //const char* src_str = ""
-  //  #include "../bnf/mod_c_source.txt"
-  //;
+  const char* lex_str = ""
+    #include "../bnf/mod_c_lex.bnf"
+  ;
+  const char* syntax_str = ""
+    #include "../bnf/mod_c_syntax.bnf"
+  ;
+  const char* pair_str = ""
+    #include "../bnf/mod_c_pair.txt"
+  ;
+  const char* src_str = ""
+    #include "../bnf/mod_c_source.txt"
+  ;
 
   //const char* lex_str = ""
   //  #include "../bnf/c_lex.bnf"
@@ -47,18 +47,18 @@ int main(void) {
   //  #include "../bnf/minc_source.txt"
   //;
 
-  const char* lex_str = ""
-    #include "../bnf/tmp_lex.bnf"
-  ;
-  const char* syntax_str = ""
-    #include "../bnf/tmp_syntax.bnf"
-  ;
-  const char* pair_str = ""
-    #include "../bnf/tmp_pair.txt"
-  ;
-  const char* src_str = ""
-    #include "../bnf/tmp_source.txt"
-  ;
+  //const char* lex_str = ""
+  //  #include "../bnf/tmp_lex.bnf"
+  //;
+  //const char* syntax_str = ""
+  //  #include "../bnf/tmp_syntax.bnf"
+  //;
+  //const char* pair_str = ""
+  //  #include "../bnf/tmp_pair.txt"
+  //;
+  //const char* src_str = ""
+  //  #include "../bnf/tmp_source.txt"
+  //;
 
   //const char* lex_str = ""
   //  #include "../bnf/math_lex.bnf"

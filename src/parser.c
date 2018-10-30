@@ -297,13 +297,13 @@ static int parse_match_exact(/*{{{*/
   // 他が解析中で無限ループ処理でsyntax_recursiveが止まったときもfalseになるからヤバイ？
   if (step <= pt_empty_index) memo[memo_index] = false;
 
-  if (step > pt_empty_index) {
-    hoge++;
-    if (hoge%1 == 0) {
-      fprintf(stderr, "hoge %d\n", hoge);
-      print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
-    }
-  }
+  //if (step > pt_empty_index) {
+  //  hoge++;
+  //  if (hoge%1 == 0) {
+  //    fprintf(stderr, "hoge %d\n", hoge);
+  //    print_parse_tree(stderr, pt_empty_index, pt, bnf, token);
+  //  }
+  //}
 
   return step;
 }/*}}}*/
