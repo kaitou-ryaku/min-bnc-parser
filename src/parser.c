@@ -172,7 +172,7 @@ static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const
     fprintf(fp, "label=\"%s", bnf[pt[origin].bnf_id].name);
   }
   else if (is_lex(bnf[pt[origin].bnf_id])) {
-    fprintf(fp, "shape=circle, ");
+    fprintf(fp, "shape=box, ");
     fprintf(fp, "color=\"%s\", ", lex_color);
     fprintf(fp, "label=\"");
     print_from_token_to_token(fp, pt[origin].token_begin_index, pt[origin].token_end_index, token);
