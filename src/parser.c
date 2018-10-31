@@ -10,7 +10,6 @@
 
 // 関数プロトタイプ/*{{{*/
 static void print_from_token_to_token(FILE *fp, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token);
-static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token);
 static void initialize_parse_tree(
   PARSE_TREE*        pt
   , const int        pt_max_size
@@ -113,7 +112,7 @@ static void print_from_token_to_token(FILE *fp, const int token_begin_index, con
     }
   }
 }/*}}}*/
-static void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token) {/*{{{*/
+extern void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token) {/*{{{*/
   for (int i=0; i<pt_size;i++) {
     fprintf(fp, "id %02d ", pt[i].id);
     fprintf(fp, "name %20s "  , bnf[pt[i].bnf_id].name);
@@ -217,8 +216,8 @@ extern int parse_token_list(/*{{{*/
 
   int step = parse_match_exact(begin_bnf_index, 0, token[0].used_size, 0, token, bnf, pair_bnf, pt, memo);
 
-  fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
-  print_parse_tree(stderr, step, pt, bnf, token);
+  // fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
+  // print_parse_tree(stderr, step, pt, bnf, token);
   delete_parse_tree_meta_all(step, pt, bnf);
 
   return step;

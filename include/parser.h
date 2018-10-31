@@ -35,4 +35,12 @@ void origin_parse_tree_to_dot(
   , const char*       syntax_color
 );
 
+void print_parse_tree(
+  FILE*       fp
+  , const int pt_size
+  , const     PARSE_TREE* pt
+  , const     BNF* bnf
+  , const     LEX_TOKEN* token
+);
+
 #endif
