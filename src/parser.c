@@ -215,6 +215,7 @@ extern int parse_token_list(/*{{{*/
   const int begin_bnf_index = search_bnf_next_syntax(-1, bnf);
 
   int step = parse_match_exact(begin_bnf_index, 0, token[0].used_size, 0, token, bnf, pair_bnf, pt, memo);
+  for (int i=0; i<step; i++) pt[i].used_size = step;
 
   // fprintf(stderr, "TOTAL PARSE TREE STEP:%d\n", step);
   // print_parse_tree(stderr, step, pt, bnf, token);
