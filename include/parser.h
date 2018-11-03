@@ -43,4 +43,12 @@ void print_parse_tree(
   , const     LEX_TOKEN* token
 );
 
+void print_parse_tree_unit(
+  FILE*       fp
+  , const int pt_index
+  , const     PARSE_TREE* pt
+  , const     BNF* bnf
+  , const     LEX_TOKEN* token
+);
+
 #endif

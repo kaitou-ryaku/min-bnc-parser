@@ -2,6 +2,7 @@
 #include "../include/bnf.h"
 #include "../include/syntax.h"
 #include "../include/pair_bnf.h"
+#include "../include/parser.h"
 #include "../min-regex/include/min-regex.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -114,19 +115,22 @@ static void print_from_token_to_token(FILE *fp, const int token_begin_index, con
 }/*}}}*/
 extern void print_parse_tree(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token) {/*{{{*/
   for (int i=0; i<pt_size;i++) {
-    fprintf(fp, "id %02d ", pt[i].id);
-    fprintf(fp, "name %20s "  , bnf[pt[i].bnf_id].name);
-    fprintf(fp, "state %d " , pt[i].state);
-    fprintf(fp, "bnf_id %03d ", pt[i].bnf_id);
-    fprintf(fp, "up_bnf_node_index %02d ", pt[i].up_bnf_node_index);
-    fprintf(fp, "up %02d ", pt[i].up         );
-    fprintf(fp, "down %02d ", pt[i].down       );
-    fprintf(fp, "left %02d ", pt[i].left       );
-    fprintf(fp, "right %02d ", pt[i].right      );
-    fprintf(fp, "token [%02d-%02d] ", pt[i].token_begin_index, pt[i].token_end_index);
-    print_from_token_to_token(fp, pt[i].token_begin_index, pt[i].token_end_index, token);
+    print_parse_tree_unit(fp, i, pt, bnf, token);
     fprintf(fp, "\n");
   }
+}/*}}}*/
+extern void print_parse_tree_unit(FILE *fp, const int pt_index, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token) {/*{{{*/
+  fprintf(fp, "id %02d ", pt[pt_index].id);
+  fprintf(fp, "name %20s "  , bnf[pt[pt_index].bnf_id].name);
+  fprintf(fp, "state %d " , pt[pt_index].state);
+  fprintf(fp, "bnf_id %03d ", pt[pt_index].bnf_id);
+  fprintf(fp, "up_bnf_node_index %02d ", pt[pt_index].up_bnf_node_index);
+  fprintf(fp, "up %02d ", pt[pt_index].up         );
+  fprintf(fp, "down %02d ", pt[pt_index].down       );
+  fprintf(fp, "left %02d ", pt[pt_index].left       );
+  fprintf(fp, "right %02d ", pt[pt_index].right      );
+  fprintf(fp, "token [%02d-%02d] ", pt[pt_index].token_begin_index, pt[pt_index].token_end_index);
+  print_from_token_to_token(fp, pt[pt_index].token_begin_index, pt[pt_index].token_end_index, token);
 }/*}}}*/
 extern void all_parse_tree_to_dot(FILE *fp, const int pt_size, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize) {/*{{{*/
 
