@@ -56,11 +56,23 @@ extern int match_lexer(/*{{{*/
   while (seek  < strlen(src_str)) {
     const char *rest = &(src_str[seek ]);
 
-    int index = -1;
-    while (1) {
-      index = search_bnf_next_lex(index, bnf);
-      if (index < 0) break;
+    // inta を int aと誤判定しないようにidentifierかどうか常に判定する
+    int index_identifier = 0;
+    while (index_identifier >= 0) {
+      if (strcmp(bnf[index_identifier].name, "identifier") == 0) break;
+      index_identifier = search_bnf_next_lex(index_identifier, bnf);
+    }
 
+    int delta_identifier;
+    MIN_REGEX_MATCH match_identifier[200];
+    if (index_identifier >= 0) {
+      delta_identifier = forward_longest_match( rest, bnf[index_identifier].node, match_identifier, 200);
+    } else {
+      delta_identifier = -1;
+    }
+
+    int index = 0;
+    while (index >= 0) {
       BNF l = bnf[index];
       MIN_REGEX_MATCH match[200];
       int delta = forward_longest_match( rest, l.node, match, 200);
@@ -72,17 +84,23 @@ extern int match_lexer(/*{{{*/
           break;
         }
 
-        token[token_id].id    = token_id;
-        token[token_id].kind  = index;
-        token[token_id].src   = src_str;
-        token[token_id].begin = seek ;
-        token[token_id].end   = seek +delta;
+        // 記号類にマッチ -> delta_identifier == -1, delta > 0 --> 登録
+        // int にマッチ   -> delta_identifier == 3, delta == 3 --> 登録
+        // intaにマッチ   -> delta_identifier == 4, delta == 3 --> 登録しない
+        if (delta_identifier == -1 || delta == delta_identifier) {
+          token[token_id].id    = token_id;
+          token[token_id].kind  = index;
+          token[token_id].src   = src_str;
+          token[token_id].begin = seek ;
+          token[token_id].end   = seek +delta;
 
-        seek = seek + delta;
-        token_id++;
-        assert(token_id < token_max_size);
-        break;
+          seek = seek + delta;
+          token_id++;
+          assert(token_id < token_max_size);
+          break;
+        }
       }
+      index = search_bnf_next_lex(index, bnf);
     }
   }
 
