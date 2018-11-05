@@ -6,5 +6,6 @@
 #include "../include/syntax.h"
 #include "../include/parser.h"
 #include "../include/pair_bnf.h"
+#include "../include/memo.h"
 
 #endif

@@ -58,4 +58,12 @@ typedef struct {
   int  right_bnf_id;
 } PAIR_BNF;
 
+typedef struct {
+  bool state;
+  char bnf_id;
+  int token_begin_index;
+  int token_end_index;
+  int total_size;
+} PARSE_MEMO;
+
 #endif

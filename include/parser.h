@@ -10,7 +10,7 @@ int parse_token_list(
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , const int        pt_max_size
-  , bool*            memo
+  , PARSE_MEMO*      memo
   , const int        memo_size
 );
 

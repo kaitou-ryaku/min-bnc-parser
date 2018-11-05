@@ -3,6 +3,7 @@
 #include "../include/syntax.h"
 #include "../include/pair_bnf.h"
 #include "../include/parser.h"
+#include "../include/memo.h"
 #include "../min-regex/include/min-regex.h"
 #include <stdbool.h>
 #include <stdio.h>
@@ -29,7 +30,7 @@ static int parse_match_exact(
   , const BNF*       bnf
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
-  , bool*            memo
+  , PARSE_MEMO*      memo
 );
 static int parse_match_shortest(
   const   int        bnf_index
@@ -41,7 +42,7 @@ static int parse_match_shortest(
   , const BNF*       bnf
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
-  , bool*            memo
+  , PARSE_MEMO*      memo
 );
 static int parse_syntax_recursive(
   const   int        bnf_index
@@ -52,12 +53,11 @@ static int parse_syntax_recursive(
   , const BNF*       bnf
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
-  , bool*            memo
+  , PARSE_MEMO*      memo
 );
 static int delete_parse_tree_meta_all(const int pt_size, PARSE_TREE* pt, const BNF* bnf);
 static void delete_parse_tree_single(const int id, PARSE_TREE* pt);
 static void origin_parse_tree_to_dot_recursive(FILE *fp, const int origin, const PARSE_TREE* pt, const BNF* bnf, const LEX_TOKEN* token, const char* fontsize, const char* meta_color, const char* lex_color, const char* syntax_color);
-static int bnf_token_to_memo_index(const int bnf_id, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token);
 static void back_track_update_index(
   const   int   bnf_index
   , const int   right_side_before_match
@@ -223,13 +223,11 @@ extern int parse_token_list(/*{{{*/
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
   , const int        pt_max_size
-  , bool*            memo
+  , PARSE_MEMO*      memo
   , const int        memo_max_size
 ) {
 
-  const int memo_size = 255*(token[0].used_size+1)*(token[0].used_size+1);
-  assert(memo_size < memo_max_size);
-  for (int i=0; i<memo_max_size; i++) memo[i] = true;
+  initialize_memo(memo, memo_max_size);
 
   initialize_parse_tree(pt, pt_max_size);
 
@@ -253,13 +251,12 @@ static int parse_match_exact(/*{{{*/
   , const BNF*       bnf
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
-  , bool*            memo
+  , PARSE_MEMO*      memo
 ) {
 
   if (token_begin_index > token_end_index) return pt_empty_index;
 
-  const int memo_index = bnf_token_to_memo_index(bnf_index, token_begin_index, token_end_index, token);
-  if (!(memo[memo_index])) return pt_empty_index;
+  if (!(search_memo(bnf_index, token_begin_index, token_end_index, memo))) return pt_empty_index;
 
   int step = pt_empty_index;
 
@@ -315,7 +312,7 @@ static int parse_match_exact(/*{{{*/
 
   // TODO
   // 他が解析中で無限ループ処理でsyntax_recursiveが止まったときもfalseになるからヤバイ？
-  if (step <= pt_empty_index) memo[memo_index] = false;
+  if (step <= pt_empty_index) register_memo(false, bnf_index, token_begin_index, token_end_index, memo);
 
   return step;
 }/*}}}*/
@@ -329,7 +326,7 @@ static int parse_match_shortest(/*{{{*/
   , const BNF*       bnf
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
-  , bool*            memo
+  , PARSE_MEMO*      memo
 ) {
 
   int step = pt_empty_index;
@@ -352,7 +349,7 @@ static int parse_syntax_recursive(/*{{{*/
   , const BNF*       bnf
   , const PAIR_BNF*  pair_bnf
   , PARSE_TREE*      pt
-  , bool*            memo
+  , PARSE_MEMO*      memo
 ) {
 
   assert(is_syntax(bnf[bnf_index]));
@@ -509,10 +506,6 @@ static void delete_parse_tree_single(const int id, PARSE_TREE* pt) {/*{{{*/
       else                   pt[pt[id].up].down = -1;
     }
   }
-}/*}}}*/
-static int bnf_token_to_memo_index(const int bnf_id, const int token_begin_index, const int token_end_index, const LEX_TOKEN* token) {/*{{{*/
-  const int ts = token[0].used_size+1;
-  return bnf_id*ts*ts + token_begin_index*ts + token_end_index;
 }/*}}}*/
 static void back_track_update_index(/*{{{*/
   const   int   bnf_index

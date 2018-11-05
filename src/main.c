@@ -1,13 +1,8 @@
-#include "../include/bnf.h"
-#include "../include/lexer.h"
-#include "../include/syntax.h"
-#include "../include/parser.h"
-#include "../include/pair_bnf.h"
+#include "../include/min-bnf-parser.h"
 #include <stdio.h>
 #include <assert.h>
 
 int main(void) {
-
   const char* lex_str = ""
     #include "../bnf/mod_c_lex.bnf"
   ;
@@ -132,8 +127,8 @@ int main(void) {
   print_token(stderr, bnf, token, token_size);
 
   PARSE_TREE pt[5000];
-  static bool memo[255*2000*2000];
-  parse_token_list(token, bnf, pair_bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(bool));
+  PARSE_MEMO memo[10000];
+  parse_token_list(token, bnf, pair_bnf, pt, sizeof(pt)/sizeof(PARSE_TREE), memo, sizeof(memo)/sizeof(PARSE_MEMO));
 
   {
     FILE *fp;
