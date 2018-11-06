@@ -36,4 +36,10 @@ void print_token(
   , const int  token_size
 );
 
+bool is_token_kind(
+  const char* name
+  , const LEX_TOKEN token
+  , const BNF* bnf
+);
+
 #endif

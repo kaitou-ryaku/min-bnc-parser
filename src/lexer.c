@@ -132,9 +132,16 @@ extern void print_token(/*{{{*/
     print_token_name(fp, t);
     for (int j=0; j<strlen(t.src)-t.end; j++) fprintf(fp, " ");
 
-    fprintf(fp, " | %20s", l.name);
-    fprintf(fp, " | %20s", l.def);
-    fprintf(fp, " | %20s", l.simple);
+    fprintf(fp, " | %s", l.name);
+    // fprintf(fp, " | %20s", l.def);
+    // fprintf(fp, " | %20s", l.simple);
     fprintf(fp, "\n");
   }
+}/*}}}*/
+extern bool is_token_kind(/*{{{*/
+  const char* name
+  , const LEX_TOKEN token
+  , const BNF* bnf
+) {
+  return (0 == strcmp(bnf[token.kind].name, name));
 }/*}}}*/
