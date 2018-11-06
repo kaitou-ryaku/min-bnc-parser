@@ -112,20 +112,26 @@ static void print_from_token_to_token(FILE *fp, const int token_begin_index, con
     // 表示ソースが短い場合は全て表示
     if (end-begin < max_print_src_length) {
       for (int j=begin; j<end; j++) {
-        fprintf(fp, "%c", (token[0].src)[j]);
+        const char c = (token[0].src)[j];
+        if (c != '\n') fprintf(fp, "%c", c);
+        else           fprintf(fp, " ");
       }
     }
 
     // 表示ソースが長い場合は短縮表示
     else {
       for (int j=begin; j<begin+max_print_src_length/2; j++) {
-        fprintf(fp, "%c", (token[0].src)[j]);
+        const char c = (token[0].src)[j];
+        if (c != '\n') fprintf(fp, "%c", c);
+        else           fprintf(fp, " ");
       }
 
       fprintf(fp, " ... ");
 
       for (int j=end-max_print_src_length/2; j<end; j++) {
-        fprintf(fp, "%c", (token[0].src)[j]);
+        const char c = (token[0].src)[j];
+        if (c != '\n') fprintf(fp, "%c", c);
+        else           fprintf(fp, " ");
       }
     }
   }
