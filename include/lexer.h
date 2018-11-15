@@ -29,6 +29,13 @@ void print_token_name (
   , LEX_TOKEN t
 );
 
+void print_token_long_line(
+  FILE*        fp
+  , BNF*       bnf
+  , LEX_TOKEN* token
+  , const int  token_size
+);
+
 void print_token(
   FILE*        fp
   , BNF*       bnf

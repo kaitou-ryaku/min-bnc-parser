@@ -117,7 +117,7 @@ extern void print_token_name (/*{{{*/
 ) {
   for (int j=0; j<t.end-t.begin; j++) fprintf(fp, "%c", t.src[t.begin+j]);
 }/*}}}*/
-extern void print_token(/*{{{*/
+extern void print_token_long_line(/*{{{*/
   FILE*        fp
   , BNF*       bnf
   , LEX_TOKEN* token
@@ -135,6 +135,21 @@ extern void print_token(/*{{{*/
     fprintf(fp, " | %s", l.name);
     // fprintf(fp, " | %20s", l.def);
     // fprintf(fp, " | %20s", l.simple);
+    fprintf(fp, "\n");
+  }
+}/*}}}*/
+extern void print_token(/*{{{*/
+  FILE*        fp
+  , BNF*       bnf
+  , LEX_TOKEN* token
+  , const int  token_size
+) {
+
+  for (int token_id=0; token_id<token_size; token_id++) {
+    LEX_TOKEN t = token[token_id];
+    BNF       l = bnf[t.kind];
+    fprintf(fp, "%-20s | ", l.name);
+    print_token_name(fp, t);
     fprintf(fp, "\n");
   }
 }/*}}}*/
