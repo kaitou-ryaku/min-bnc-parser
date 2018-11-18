@@ -18,10 +18,12 @@ int create_lex(
 );
 
 int match_lexer(
-  LEX_TOKEN*       token
-  , const int      token_max_size
-  , const BNF*     bnf
-  , const char*    src_str
+  LEX_TOKEN*    token
+  , const int   token_max_size
+  , char*       name_array
+  , const int   name_array_max_size
+  , const BNF*  bnf
+  , const char* src_str
 );
 
 void print_token_name (

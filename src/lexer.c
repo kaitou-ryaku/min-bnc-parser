@@ -45,6 +45,8 @@ extern int create_lex(/*{{{*/
 extern int match_lexer(/*{{{*/
   LEX_TOKEN*    token
   , const int   token_max_size
+  , char*       name_array
+  , const int   name_array_max_size
   , const BNF*  bnf
   , const char* src_str
 ) {
@@ -53,6 +55,7 @@ extern int match_lexer(/*{{{*/
 
   int token_id = 0;
   int seek     = 0;
+  int name_used= 0;
   while (seek  < strlen(src_str)) {
     const char *rest = &(src_str[seek ]);
 
@@ -93,6 +96,14 @@ extern int match_lexer(/*{{{*/
           token[token_id].src   = src_str;
           token[token_id].begin = seek ;
           token[token_id].end   = seek +delta;
+          token[token_id].name  = &(name_array[name_used]);
+
+          assert(name_used+delta+1 < name_array_max_size);
+          for (int name_seek=0; name_seek<delta; name_seek++) {
+            name_array[name_used+name_seek] = src_str[seek+name_seek];
+          }
+          name_array[name_used+delta] = '\0';
+          name_used += delta+1;
 
           seek = seek + delta;
           token_id++;

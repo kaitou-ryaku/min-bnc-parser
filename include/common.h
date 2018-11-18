@@ -33,6 +33,7 @@ typedef struct {
   const char* src;
   int         begin;
   int         end;
+  char*       name;
 } LEX_TOKEN;
 
 typedef struct {
