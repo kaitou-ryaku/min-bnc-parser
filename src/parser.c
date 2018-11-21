@@ -84,7 +84,7 @@ static void initialize_parse_tree_unit(/*{{{*/
   , const int        index
 ) {
   pt[index].id                = index;
-  pt[index].state             = 0;
+  pt[index].state             = PT_STATE_UNUSED;
   pt[index].used_size         = 0;
   pt[index].bnf_id            = -1;
   pt[index].up_bnf_node_index = -1;
@@ -277,7 +277,7 @@ static int parse_match_exact(/*{{{*/
     && (token_begin_index == token_end_index)
   ) {
 
-    pt[step].state = 1;
+    pt[step].state = PT_STATE_META;
     step++;
   }
 
@@ -287,7 +287,7 @@ static int parse_match_exact(/*{{{*/
     && (bnf[bnf_index].kind == token[token_begin_index].kind)
   ) {
 
-    pt[step].state = 2;
+    pt[step].state = PT_STATE_LEX;
     step++;
   }
 
@@ -296,7 +296,7 @@ static int parse_match_exact(/*{{{*/
     && is_valid_paren_token(token_begin_index, token_end_index, token, pair_bnf)
   ) {
 
-    pt[step].state = 3;
+    pt[step].state = PT_STATE_SYNTAX;
 
     // TODO 下のノードを再帰的に解析
     const int new_step = parse_syntax_recursive(bnf_index, token_begin_index, token_end_index, step+1, token, bnf, pair_bnf, pt, memo);

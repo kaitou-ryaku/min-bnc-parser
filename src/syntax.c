@@ -21,7 +21,7 @@ extern int create_syntax(/*{{{*/
   , const int       node_max_size
 ) {
 
-  const int syntax_size = read_bnf(syntax_str, bnf, name, name_max_size, def, def_max_size, 3); // 3は(unused 0, meta 1, lex 2, syntax 3)の3
+  const int syntax_size = read_bnf(syntax_str, bnf, name, name_max_size, def, def_max_size, PT_STATE_SYNTAX); // 3は(unused 0, meta 1, lex 2, syntax 3)の3
   int simple_seek = 0;
   int node_seek   = 0;
 

@@ -19,22 +19,22 @@ extern void initialize_bnf(/*{{{*/
 
   for (int i=0; i<bnf_max_size; i++) {
 
-    bnf[i].kind        = i;            // 配列の添字
-    bnf[i].state       = 0;            // 非使用なら0, メタ文字なら1, LEXなら2, SYNTAXなら3
-    bnf[i].total_size  = bnf_max_size; // BNF配列のサイズ
-    bnf[i].alphabet    = alphabet;     // kindをむりやりchar型にしたもの。syntaxの解析で一時的に使う
+    bnf[i].kind        = i;               // 配列の添字
+    bnf[i].state       = PT_STATE_UNUSED; // 非使用なら0, メタ文字なら1, LEXなら2, SYNTAXなら3。PT_STATE_UNUSED, META, LEX, SYNTAXで指定
+    bnf[i].total_size  = bnf_max_size;    // BNF配列のサイズ
+    bnf[i].alphabet    = alphabet;        // kindをむりやりchar型にしたもの。syntaxの解析で一時的に使う
 
-    bnf[i].bnf_str     = NULL;         // bnfの文字列
-    bnf[i].name_begin  = -1;           // bnf_strの左辺のトークン名の開始index
-    bnf[i].name_end    = -1;           // bnf_strの左辺のトークン名の終了index
-    bnf[i].def_begin   = -1;           // bnf_strの右辺のトークン名の開始index
-    bnf[i].def_end     = -1;           // bnf_strの右辺のトークン名の開始index
+    bnf[i].bnf_str     = NULL;            // bnfの文字列
+    bnf[i].name_begin  = -1;              // bnf_strの左辺のトークン名の開始index
+    bnf[i].name_end    = -1;              // bnf_strの左辺のトークン名の終了index
+    bnf[i].def_begin   = -1;              // bnf_strの右辺のトークン名の開始index
+    bnf[i].def_end     = -1;              // bnf_strの右辺のトークン名の開始index
 
-    bnf[i].name        = NULL;         // 左辺のトークン名の名前
-    bnf[i].def         = NULL;         // 右辺のbnfの文字列
-    bnf[i].simple      = NULL;         // defをmin-regexで解析可能にした文字列
-    bnf[i].node        = NULL;         // simpleをmin-regexで解析したノード列の開始ポインタ
-    bnf[i].node_size   = 0;            // ノード列のサイズ
+    bnf[i].name        = NULL;            // 左辺のトークン名の名前
+    bnf[i].def         = NULL;            // 右辺のbnfの文字列
+    bnf[i].simple      = NULL;            // defをmin-regexで解析可能にした文字列
+    bnf[i].node        = NULL;            // simpleをmin-regexで解析したノード列の開始ポインタ
+    bnf[i].node_size   = 0;               // ノード列のサイズ
 
     for (int j=0; j<meta_size; j++) {
       if (alphabet == meta[j]) {
@@ -140,14 +140,14 @@ static int search_bnf_next_state(const int bnf_state, const int current_bnf_inde
   return i;
 }/*}}}*/
 extern int search_bnf_next_lex(const int current_bnf_index, const BNF* bnf) {/*{{{*/
-  return search_bnf_next_state(2, current_bnf_index, bnf);
+  return search_bnf_next_state(PT_STATE_LEX, current_bnf_index, bnf);
 }/*}}}*/
 extern int search_bnf_next_syntax(const int current_bnf_index, const BNF* bnf) {/*{{{*/
-  return search_bnf_next_state(3, current_bnf_index, bnf);
+  return search_bnf_next_state(PT_STATE_SYNTAX, current_bnf_index, bnf);
 }/*}}}*/
 extern int search_bnf_next_lex_or_syntax(const int current_bnf_index, const BNF* bnf) {/*{{{*/
-  const int lex    = search_bnf_next_state(2, current_bnf_index, bnf);
-  const int syntax = search_bnf_next_state(3, current_bnf_index, bnf);
+  const int lex    = search_bnf_next_state(PT_STATE_LEX, current_bnf_index, bnf);
+  const int syntax = search_bnf_next_state(PT_STATE_SYNTAX, current_bnf_index, bnf);
   if      (lex    < 0)    return syntax;
   else if (syntax < 0)    return lex;
   else if (lex < syntax ) return lex;
@@ -162,11 +162,11 @@ extern bool is_lex(const BNF bnf) {/*{{{*/
   else return false;
 }/*}}}*/
 extern bool is_syntax(const BNF bnf) {/*{{{*/
-  if (bnf.state == 3) return true;
+  if (bnf.state == PT_STATE_SYNTAX) return true;
   else return false;
 }/*}}}*/
 extern bool is_lex_or_syntax(const BNF bnf) {/*{{{*/
-  if ((bnf.state == 2) || (bnf.state == 3)) return true;
+  if ((bnf.state == PT_STATE_LEX) || (bnf.state == PT_STATE_SYNTAX)) return true;
   else return false;
 }/*}}}*/
 extern BNF node_to_bnf(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
@@ -177,10 +177,10 @@ extern int node_to_bnf_id(const MIN_REGEX_NODE node, const BNF* bnf) {/*{{{*/
 }/*}}}*/
 extern void print_bnf_unit(FILE* fp, const BNF bnf) {/*{{{*/
   fprintf(fp, "%03d/%d ", bnf.kind, bnf.total_size);
-  if (bnf.state == 0) fprintf(fp, "EMPTY  ");
-  if (bnf.state == 1) fprintf(fp, "META %c ", bnf.alphabet);
-  if (bnf.state == 2) fprintf(fp, "LEX    ");
-  if (bnf.state == 3) fprintf(fp, "SYNTAX ");
+  if (bnf.state == PT_STATE_UNUSED) fprintf(fp, "EMPTY  ");
+  if (bnf.state == PT_STATE_META)   fprintf(fp, "META %c ", bnf.alphabet);
+  if (bnf.state == PT_STATE_LEX)    fprintf(fp, "LEX    ");
+  if (bnf.state == PT_STATE_SYNTAX) fprintf(fp, "SYNTAX ");
 
   fprintf(fp, "%20s: ", bnf.name);
   fprintf(fp, "%s\n", bnf.def);

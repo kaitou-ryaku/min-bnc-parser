@@ -20,7 +20,7 @@ extern int create_lex(/*{{{*/
   , const int       node_max_size
 ) {
 
-  const int lex_size = read_bnf(lex_str, bnf, name, name_max_size, def, def_max_size, 2); // 2は(unused 0, meta 1, lex 2, syntax 3)の2
+  const int lex_size = read_bnf(lex_str, bnf, name, name_max_size, def, def_max_size, PT_STATE_LEX); // 2は(unused 0, meta 1, lex 2, syntax 3)の2
   int simple_seek = 0;
   int node_seek   = 0;
 

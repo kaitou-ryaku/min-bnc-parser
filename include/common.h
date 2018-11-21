@@ -67,4 +67,9 @@ typedef struct {
   int total_size;
 } PARSE_MEMO;
 
+static const int PT_STATE_UNUSED = 0;
+static const int PT_STATE_META   = 1;
+static const int PT_STATE_LEX    = 2;
+static const int PT_STATE_SYNTAX = 3;
+
 #endif
